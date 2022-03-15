@@ -5,7 +5,8 @@ Quick filters plugins allow you to easily create filter widgets for control pane
 # Features
 
 * Filters can be created using fields assigned to your content or attributes like entry post date. 
-* Separate content groups like entry sections or category groups can have their filter widgets defined.
+* Separate content groups like entry sections or category groups can have their filter widgets defined. 
+* You don't need to define filters every time you visit content list - you **define filter widget layout just once** and later use these widgets to filter list using fields and attributes values.
 * You can filter by relation fields (like entry or category field), option fields (like checkboxes or radio groups) and lightwitch fields - using **dropdown widget**.
 * Dropdown widget created from relation field is **populated using elements** that are available for selection within these fields. For example - with the category field, widget options will contain all categories that user can select using this field.
 * In the case of multi-level categories or entry structures, **level layout** is represented in the dropdown widget, creating a "tree" structure. 
