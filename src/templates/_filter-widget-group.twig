@@ -1,0 +1,24 @@
+{% if filters is not empty %}
+<div class="element-filters__group" data-element-filter-group>
+	{% for singleFilter in filters %}
+		<div class="element-filters__single">
+			<div class="element-filters__single-top">
+				<div class="element-filters__single-label">
+					{{singleFilter.name}}
+				</div>
+				{% if singleFilter.hasValue() %}
+				<button 
+					class="element-filters__single-clear delete icon" 
+					title="{{'Clear filter'|t('quick-filters')}}"
+					data-element-filter-clear
+					data-element-filter-clear-handle="{{singleFilter.getFilterHandle()}}"
+				></button>
+				{% endif %}
+			</div>
+			<div class="element-filters__single-widget">
+				{{singleFilter.render()}}
+			</div>
+		</div>
+	{% endfor %}
+</div>
+{% endif %}

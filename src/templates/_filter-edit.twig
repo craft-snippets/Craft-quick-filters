@@ -1,0 +1,108 @@
+{% extends "_layouts/cp" %}
+{% import '_includes/forms' as forms %}
+{% from '_includes/forms' import field %}
+
+{% set isNew = (filterObject is not defined or not filterObject.id) %}
+
+{% set title = isNew ? 'Create new filter'|t('quick-filters') : 'Edit'|t('quick-filters') ~ ' ' ~ filterObject.name %}
+
+{% set fullPageForm = true %}
+
+{% set crumbs = [
+    { label: elementAndGroupName, url: bredcrumbUrl },
+    { label: 'Filters'|t('quick-filters'), url: url('quick-filters/' ~ elementType ~ '/' ~ sourceKey) },
+] %}
+
+{% block content %}
+
+
+
+
+    {# filter type #}
+    {{ forms.selectField({
+        label: 'Type of filter'|t('quick-filters'),
+        id: 'filterType',
+        name: 'filterType',
+        options: filterTypes,
+        value: filterObject.filterType,
+        errors: filterObject.getErrors('filterType'),
+        required: true,
+    }) }}    
+
+    {# field #}
+    <div data-element-filters-select-field {{filterObject.filterType == 'attribute' ? 'hidden'}}>
+    {{ forms.selectField({
+        label: 'Craft Field'|t('quick-filters'),
+        id: 'fieldId',
+        name: 'fieldId',
+        options: craftFields,
+        value: filterObject.fieldId,
+        errors: filterObject.getErrors('fieldId'),
+        instructions: 'You can create filters from date fields, relation type fields, fields with multiple options, number fields, text fields and lightswitch fields.'|t('quick-filters'),
+    }) }}
+    </div>
+
+    
+
+    {# element attribute #}
+    <div data-element-filters-select-attribute {{filterObject.filterType == 'field' or filterObject.filterType == null ? 'hidden'}}>
+    {{ forms.selectField({
+        label: 'Element attribute'|t('quick-filters'),
+        id: 'elementAttribute',
+        name: 'elementAttribute',
+        options: elementAttributes,
+        value: filterObject.elementAttribute,
+        errors: filterObject.getErrors('elementAttribute'),
+    }) }}
+    </div>
+
+    {# <pre>{{ dump(filterObject.getErrors()) }}</pre> #}
+
+    {{actionInput('quick-filters/element-filters/filter-save')}}
+    {{redirectInput('quick-filters/' ~ elementType ~ '/' ~ sourceKey)}}
+
+    {% if not isNew %}
+        {{hiddenInput('filterId', filterObject.id)}}
+    {% endif %}
+
+    {{hiddenInput('elementType', elementType)}}
+    {{hiddenInput('sourceKey', sourceKey)}}    
+
+{% endblock %}
+
+{% css %}
+    #fieldId-field{
+        margin-top: 0px;
+    }
+    #fieldId-field .select, #filterType, #elementAttribute{
+        width:  300px;
+    }
+    #fieldId-field .select:not(.selectize):after{
+        display: none;
+    }
+    .ss-single-selected{
+        background-color: #d7dee7 !important;
+        color: #3f4d5a !important;
+    }
+{% endcss %}
+
+{% js %}
+// $('select#fieldId').prepend('<option data-placeholder="true"></option>');
+new SlimSelect({
+  select: $('#fieldId')[0],
+  // placeholder: "{{'Select field'|t('quick-filters')}}",
+  searchPlaceholder: "{{'Search'|t('quick-filters')}}",
+});
+
+
+$('#filterType').on('change', function(){
+    if($(this).val() == 'field'){
+        $('[data-element-filters-select-field]').show();
+        $('[data-element-filters-select-attribute]').hide();
+    }else if($(this).val() == 'attribute'){
+        $('[data-element-filters-select-attribute]').show();
+        $('[data-element-filters-select-field]').hide();
+    }
+});
+
+{% endjs %}

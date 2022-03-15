@@ -1,0 +1,31 @@
+{% set reQuestValue = craft.app.request.getBodyParam('criteria')[handle] ?? [] %}
+{% set start = null %}
+{% if reQuestValue[1] is defined %}
+{% set start = reQuestValue[1]|split(' ')[1] %}
+{% endif %}
+{% set end = null %}
+{% if reQuestValue[2] is defined %}
+{% set end = reQuestValue[2]|split(' ')[1] %}
+{% endif %}
+
+{# newly created users do not have weekstartday defined #}
+{% set weekStartDay = currentUser.getPreferences().weekStartDay ?? 1 %}
+
+<input 
+    class="element-filters__datepicker"
+    data-element-filters-datepicker
+    data-element-filters-datepicker-firstday="{{weekStartDay}}"
+    data-element-filters-datepicker-cancel="{{'Clear'|t('quick-filters')}}"
+    data-element-filters-datepicker-apply="{{'Apply'|t('quick-filters')}}"
+    data-element-filters-datepicker-format="{{dateFormat}}"
+    data-element-filters-datepicker-weekdays="{{craft.app.locale.getWeekDayNames('short')|json_encode}}"
+    data-element-filters-datepicker-months="{{craft.app.locale.getMonthNames('short')|json_encode}}"
+    data-element-filters-handle="{{handle}}"
+    placeholder="{{'Select date range'|t('quick-filters')}}"
+    {% if start %}
+    data-element-filters-datepicker-start="{{start}}"
+    {% endif %}
+    {% if end %}
+    data-element-filters-datepicker-end="{{end}}"
+    {% endif %}
+>

@@ -1,0 +1,41 @@
+{
+    "name": "craftsnippets/craft-quick-filters",
+    "description": "Quick filters",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "search",
+        "filter",
+        "craftcms",
+        "craft-plugin",
+        "quick filters"
+    ],
+    "support": {
+        "docs": "???",
+        "issues": "???"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Piotr Pogorzelski",
+            "homepage": "http://craftsnippets.com/"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "craftsnippets\\elementfilters\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Quick filters",
+        "handle": "quick-filters",
+        "developer": "Piotr Pogorzelski",
+        "developerUrl": "http://craftsnippets.com/",
+        "documentationUrl": "???",
+        "changelogUrl": "???",
+        "class": "craftsnippets\\elementfilters\\ElementFilters"
+    }
+}

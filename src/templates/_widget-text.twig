@@ -1,0 +1,10 @@
+{% set reQuestValue = craft.app.request.getBodyParam('criteria')[handle] ?? null %}
+{% set reQuestValue = reQuestValue|trim('*') %}
+<input
+    type="text"
+    class="element-filters__text"
+    data-elements-filters-text
+    data-element-filters-handle="{{handle}}"
+    value="{{reQuestValue}}"
+    placeholder="{{'Filter by'|t('quick-filters')}}"
+>

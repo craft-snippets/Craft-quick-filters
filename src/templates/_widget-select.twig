@@ -1,0 +1,33 @@
+<select {{multiple ? 'multiple'}} 
+    data-element-filters-type="{{type}}"
+    data-element-filters-handle="{{handle}}"
+    data-element-filters-select
+    data-element-filters-select-placeholder="{{'Select value'|t('quick-filters')}}"
+    data-element-filters-search-select-placeholder="{{'Search'|t('quick-filters')}}"
+    class=""
+>
+{% for option in options %}
+    {% set selected = false %}
+    {% set requestOptions = craft.app.request.getBodyParam('criteria')[handle] ?? [] %}
+        {# lightswitch value is boolean, not array #}
+        {% if requestOptions is iterable %}
+            {% if option.value in requestOptions %}
+                {% set selected = true %}
+            {% endif %}
+        {% else %}
+            {% if option.value == requestOptions %}
+                {% set selected = true %}
+            {% endif %}
+        {% endif %}
+    <option 
+        value="{{option.value}}" 
+        class="lvl{{option.level}}" 
+        style="margin-left: {{option.level - 1}}rem;"
+        {% if selected %}
+        selected
+        {% endif %}
+    >
+        {{option.label}}
+    </option>
+{% endfor %}
+</select>

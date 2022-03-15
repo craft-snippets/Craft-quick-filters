@@ -1,0 +1,39 @@
+{% set reQuestValue = craft.app.request.getBodyParam('criteria')[handle] ?? [] %}
+
+{% set start = null %}
+{% set end = null %}
+
+{% for item in reQuestValue %}
+    {% set parts = item|split(' ') %}
+    {% if parts|length == 2 %}
+        {% if parts[0] == '>=' %}
+            {% set start = parts[1] %}
+        {% endif %}
+        {% if parts[0] == '<=' %}
+            {% set end = parts[1] %}
+        {% endif %}            
+    {% endif %}
+{% endfor %}
+
+<div
+    class="element-filters__range"
+    data-elements-filters-range
+    data-element-filters-handle="{{handle}}"
+>
+    <input 
+        type="number"
+        class="element-filters__range-input"
+        data-elements-filters-range-input
+        data-elements-filters-range-min
+        placeholder="{{'From'|t('quick-filters')}}"
+        value="{{start}}"
+    >
+    <input 
+        type="number"
+        class="element-filters__range-input"
+        data-elements-filters-range-input
+        data-elements-filters-range-max
+        placeholder="{{'To'|t('quick-filters')}}"
+        value="{{end}}"
+    >
+</div>

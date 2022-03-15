@@ -1,0 +1,35 @@
+{% extends "_layouts/cp" %}
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+
+{% set title = 'Filters for'|t('quick-filters') ~ ' - ' ~ elementAndGroupName %}
+
+{% set crumbs = [
+    { label: elementAndGroupName, url: bredcrumbUrl },
+] %}
+
+{% block actionButton %}
+<a href="{{ newUrl }}" class="btn submit add icon">
+    {{ 'New filter'|t('craft-filters') }}
+</a>
+{% endblock %}
+
+{% block content %}
+	<div id="filters-vue-admin-table"></div>
+{% endblock %}
+
+{% js %}
+    var columns = [
+        { name: '__slot:title', title: Craft.t('quick-filters', 'Filter') },
+        { name: 'filterType', title: Craft.t('search-toolbox', 'Type of filter') },
+    ];
+
+    new Craft.VueAdminTable({
+        columns: columns,
+        container: '#filters-vue-admin-table',
+        deleteAction: 'quick-filters/element-filters/filter-delete',
+        deleteConfirmationMessage: Craft.t('app', "Are you sure you want to delete “{name}”?"),
+        emptyMessage: Craft.t('quick-filters', 'No filters exist yet'),
+        tableData: {{ filters|json_encode|raw }},
+        reorderAction: 'quick-filters/element-filters/filter-reorder',
+    });
+{% endjs %}
