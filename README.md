@@ -22,7 +22,7 @@ Quick filters plugins allow you to easily create filter widgets for control pane
 * After adding multiple filters, you can also reorder them on the filters list.
 * Keep in mind that separate content groups, for example, separate entry sections can have separate filters defined.
 
-![Screenshot](resources/link.png)
+![Screenshot](resources/link.jpg)
 
 ## Requirements
 
