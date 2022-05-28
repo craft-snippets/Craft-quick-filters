@@ -73,7 +73,7 @@ class ElementFilter extends Model
     const ATTRIBUTE_TYPE_NUMBER = 'number';
     const ATTRIBUTE_TYPE_TEXT = 'text';
 
-    public function init()
+    public function init(): void
     {
         $this->populateJsonSettings();
     }

@@ -14,7 +14,7 @@ use craft\helpers\UrlHelper;
 class ElementFiltersController extends Controller
 {
 
-protected $allowAnonymous = false;
+protected array|int|bool $allowAnonymous = false;
 
 public function actionFilterList($elementType, $sourceKey)
 {
