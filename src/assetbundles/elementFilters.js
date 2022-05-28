@@ -20,8 +20,11 @@ function getDataKey(element){
       // main folder
       if(element.is("[data-volume-handle]")){
           dataKey = element.attr('data-key');
-      // subfolder
+      }else if(element.attr('data-key').includes('custom:')){
+      /// custom source
+          dataKey = element.attr('data-key');
       }else{
+      // subfolder
           dataKey = element.parents('li.expanded').last().find('[data-volume-handle]').first().attr('data-key');
       }
 
@@ -74,7 +77,6 @@ function getElementType(){
 
 
 function addFilters(sourceKey){
-
   var elementType = getElementType();
 
   // cannot use * in url

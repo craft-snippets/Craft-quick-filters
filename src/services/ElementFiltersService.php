@@ -52,6 +52,19 @@ public function getFilters($elementType, $sourceKey)
     return $filters;
 }
 
+private function getCustomSourceLabel($class, $sourceKey)
+{
+    $sources = Craft::$app->getElementSources()->getSources($class);
+    $custom = array_filter($sources, function($single) use ($sourceKey){
+        return isset($single['key']) && $single['key'] == $sourceKey;
+    });
+    if(!empty($custom)){
+        $first = reset($custom);
+        $groupName = $first['label'];
+        return $groupName;
+    }
+    return null;
+}
 
 public function getElementGroupData($elementType, $sourceKey)
 {
@@ -78,8 +91,13 @@ public function getElementGroupData($elementType, $sourceKey)
                 $uid = explode(':', $sourceKey);
                 $uid = end($uid);
                 $section = Craft::$app->sections->getSectionByUid($uid);
-                $groupName = $section->name;
-                $bredcrumbUrl = $bredcrumbUrl = UrlHelper::cpUrl('entries/' . $section->handle);
+                if(!is_null($section)){
+                    $groupName = $section->name;
+                    $bredcrumbUrl = UrlHelper::cpUrl('entries/' . $section->handle);                    
+                }else{
+                    $groupName = $this->getCustomSourceLabel(\craft\elements\Entry::class, $sourceKey);
+                    $bredcrumbUrl = UrlHelper::cpUrl('entries'); 
+                }
             }
             break;
 
@@ -91,8 +109,14 @@ public function getElementGroupData($elementType, $sourceKey)
             $uid = explode(':', $sourceKey);
             $uid = end($uid);
             $categoryGroup = Craft::$app->categories->getGroupByUid($uid);
-            $groupName = $categoryGroup->name;
-            $bredcrumbUrl = $bredcrumbUrl = UrlHelper::cpUrl('categories/' . $categoryGroup->handle);
+            if(!is_null($categoryGroup)){
+                $groupName = $categoryGroup->name;
+                $bredcrumbUrl = UrlHelper::cpUrl('categories/' . $categoryGroup->handle);
+            }else{
+                $groupName = $this->getCustomSourceLabel(\craft\elements\Category::class, $sourceKey);
+                $bredcrumbUrl = UrlHelper::cpUrl('categories');        
+            }
+
             break;
 
         case 'users':
@@ -109,8 +133,14 @@ public function getElementGroupData($elementType, $sourceKey)
                 $uid = explode(':', $sourceKey);
                 $uid = end($uid);
                 $userGroup = Craft::$app->userGroups->getGroupByUid($uid);
-                $groupName = $userGroup->name;
-                $bredcrumbUrl = $bredcrumbUrl = UrlHelper::cpUrl('users/' . $userGroup->handle);
+                if(!is_null($userGroup)){
+                    $groupName = $userGroup->name;
+                    $bredcrumbUrl = UrlHelper::cpUrl('users/' . $userGroup->handle);
+                }else{
+                    $groupName = $this->getCustomSourceLabel(\craft\elements\User::class, $sourceKey);
+                    $bredcrumbUrl = UrlHelper::cpUrl('users');                     
+                }
+
             }
             break;
 
@@ -128,8 +158,13 @@ public function getElementGroupData($elementType, $sourceKey)
                     $uid = explode(':', $sourceKey);
                     $uid = end($uid);
                     $productType = \craft\commerce\Plugin::getInstance()->getProductTypes()->getProductTypeByUid($uid);
-                    $groupName = $productType->name;
-                    $bredcrumbUrl = UrlHelper::cpUrl('commerce/products/' . $productType->handle);
+                    if(!is_null($productType)){
+                        $groupName = $productType->name;
+                        $bredcrumbUrl = UrlHelper::cpUrl('commerce/products/' . $productType->handle);
+                    }else{
+                        $groupName = $this->getCustomSourceLabel(\craft\commerce\elements\Product::class, $sourceKey);
+                        $bredcrumbUrl = UrlHelper::cpUrl('commerce/products/');
+                    }
                 }
             }
 
@@ -154,15 +189,20 @@ public function getElementGroupData($elementType, $sourceKey)
             $uid = end($uid);
             $volumeFolder = Craft::$app->assets->getFolderByUid($uid);
 
-            // by default volume name returned user_1 or something like that for temporary uploads
-            if($volumeFolder->volumeId != null){
-                $groupName = $volumeFolder->name;
+            if(!is_null($volumeFolder)){
+                // by default volume name returned user_1 or something like that for temporary uploads
+                if($volumeFolder->volumeId != null){
+                    $groupName = $volumeFolder->name;
+                }else{
+                    $groupName = Craft::t('app', 'Temporary Uploads');
+                }
+                $volumeHandle = $volumeFolder->volume->handle != null ? $volumeFolder->volume->handle : 'temp';
+                $bredcrumbUrl = UrlHelper::cpUrl('assets/' . $volumeHandle);
             }else{
-                $groupName = Craft::t('app', 'Temporary Uploads');
+                $groupName = $this->getCustomSourceLabel(\craft\elements\Asset::class, $sourceKey);
+                $bredcrumbUrl = UrlHelper::cpUrl('assets/');
             }
 
-            $volumeHandle = $volumeFolder->volume->handle != null ? $volumeFolder->volume->handle : 'temp';
-            $bredcrumbUrl = UrlHelper::cpUrl('assets/' . $volumeHandle);
 
             break;
 
