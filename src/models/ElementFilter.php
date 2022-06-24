@@ -335,7 +335,9 @@ class ElementFilter extends Model
                     'label' => $single['label'],
                     'level' => 1,
                 ];
-            }, $field->options);
+            }, array_filter($field->options, function($single){
+                return !array_key_exists('optgroup', $single);
+            }));
         }
 
         // lightswitch
