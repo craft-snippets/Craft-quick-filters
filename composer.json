@@ -2,7 +2,7 @@
     "name": "craftsnippets/craft-quick-filters",
     "description": "Quick filters",
     "type": "craft-plugin",
-    "version": "2.0.0",
+    "version": "2.0.2",
     "keywords": [
         "search",
         "filter",
@@ -14,7 +14,7 @@
         "docs": "https://raw.githubusercontent.com/craft-snippets/Craft-quick-filters/master/README.md",
         "issues": "https://github.com/craft-snippets/Craft-quick-filters/issues"
     },
-    "license": "MIT",
+    "license": "proprietary",
     "authors": [
         {
             "name": "Piotr Pogorzelski",
