@@ -67,11 +67,17 @@ class ElementFilter extends Model
     const FIELDS_TEXT = [
         'craft\fields\PlainText',
         'craft\redactor\Field',
+        'besteadfast\preparsefield\fields\PreparseFieldType',
     ];
 
     const ATTRIBUTE_TYPE_DATE = 'date';
     const ATTRIBUTE_TYPE_NUMBER = 'number';
     const ATTRIBUTE_TYPE_TEXT = 'text';
+    const ATTRIBUTE_TYPE_SELECT = 'select';
+
+    const SELECT_TYPE_RELATION = 'relation';
+    const SELECT_TYPE_OPTIONS = 'options';
+    const SELECT_TYPE_SWITCH = 'switch';
 
     public function init(): void
     {
@@ -369,15 +375,15 @@ class ElementFilter extends Model
     {
         $type = null;
         if(in_array(get_class($field), self::FIELDS_RELATIONS)){
-            $type = 'relation';
+            $type = self::SELECT_TYPE_RELATION;
         }
 
         if(in_array(get_class($field), self::FIELDS_OPTIONS)){
-            $type = 'options';
+            $type = self::SELECT_TYPE_OPTIONS;
         }
 
         if(in_array(get_class($field), self::FIELDS_SWITCH)){
-            $type = 'switch';
+            $type = self::SELECT_TYPE_SWITCH;
         }
         return $type;
     }
@@ -408,6 +414,21 @@ class ElementFilter extends Model
                 'handle' => $this->getFilterHandle(),
                 // switch does nto allow multiple options selection
                 'multiple' => !in_array(get_class($field), self::FIELDS_SWITCH),
+            ];
+            $template = self::WIDGET_SELECT_TEMPLATE;
+        }
+
+        // select entry type
+        if(
+            $this->filterType == self::FILTER_TYPE_ATTRIBUTE &&
+            $this->elementAttribute == 'typeId'
+        ){
+            $context = [
+                'type' => self::SELECT_TYPE_OPTIONS,
+                'options' => $this->getEntryTypeOptions(),
+                'placeholder' => $this->getName(),
+                'handle' => $this->getFilterHandle(),
+                'multiple' => true,
             ];
             $template = self::WIDGET_SELECT_TEMPLATE;
         }
@@ -620,6 +641,11 @@ class ElementFilter extends Model
                         'attribute' => 'dateUpdated',
                         'type' => self::ATTRIBUTE_TYPE_DATE,
                     ],
+                    [
+                        'label' => Craft::t('app', 'Entry Type'),
+                        'attribute' => 'typeId',
+                        'type' => self::ATTRIBUTE_TYPE_SELECT,
+                    ],                    
                 ];
 
                 break;
@@ -901,6 +927,51 @@ class ElementFilter extends Model
             return false;
         }
         return true;
+    }
+
+    private function getEntryTypeOptions()
+    {
+
+
+        // only entries
+        if($this->elementType != 'entries'){
+            return [];
+        }
+
+        if($this->sourceKey == 'all' || str_contains($this->sourceKey, 'custom')){
+            $entryTypes = Craft::$app->getSections()->getAllEntryTypes();
+        }else{
+            $uid = str_replace('section:', '', $this->sourceKey);
+            $section = Craft::$app->getSections()->getSectionByUid($uid);
+            if(is_null($section)){
+                return [];
+            }
+            $entryTypes = $section->getEntryTypes();            
+        }
+
+        $values = array_map(function($single){
+            $label = $single->name;
+            // if we display entry types of multiple sections, show chich section do they belong
+            if($this->sourceKey == 'all' || str_contains($this->sourceKey, 'custom')){
+                $label = $label . ' (' . $single->section->name . ')';
+            }
+            return [
+                'value' => $single->id,
+                'label' => $label,
+                'level' => 1,
+                'sectionId' => $single->sectionId, // for sorting
+            ];            
+        }, $entryTypes);
+
+        // sort by section
+        usort($values, function($a, $b){
+            if ($a['sectionId']  == $b['sectionId'] ) {
+                return 0;
+            }
+            return ($a['sectionId'] < $b['sectionId']) ? -1 : 1;    
+        });        
+
+        return $values;
     }
 
 }
