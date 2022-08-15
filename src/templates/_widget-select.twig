@@ -21,7 +21,7 @@
         {% endif %}
     <option 
         value="{{option.value}}" 
-        class="lvl{{option.level}}" 
+        class="lvl{{option.level}} {{(option.enabled ?? false) ? 'element-filters__option-is-enabled' : 'element-filters__option-is-disabled'}} element-filters__option-type-{{type}}" 
         style="margin-left: {{option.level - 1}}rem;"
         {% if selected %}
         selected

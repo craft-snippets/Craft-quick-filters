@@ -149,6 +149,7 @@ class ElementFilter extends Model
                     'label' => $single->title,
                     // non structures have level null
                     'level' => $single->level ?? 1,
+                    'enabled' => $single->enabled,
                 ];
             }, $elements);                    
         }
@@ -165,6 +166,7 @@ class ElementFilter extends Model
                         'value' => $single->id,
                         'label' => $single->title,
                         'level' => $single->level,
+                        'enabled' => $single->enabled,
                     ];
                 }, $elements);
             }else{
@@ -288,6 +290,7 @@ class ElementFilter extends Model
                     'value' => $single->id,
                     'label' => $single->title,
                     'level' => 1,
+                    'enabled' => $single->enabled,
                 ];
             }, $elements);     
         }
@@ -316,6 +319,7 @@ class ElementFilter extends Model
                     'value' => $single->id,
                     'label' => $single->title,
                     'level' => 1,
+                    'enabled' => $single->enabled,
                 ];
             }, $elements);     
         }
