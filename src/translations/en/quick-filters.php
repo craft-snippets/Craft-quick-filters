@@ -49,4 +49,6 @@ return [
     'Clear filter' => 'Clear filter',
     'Such filter for this element list already exists' => 'Such filter for this element list already exists',
     'Filter by' => 'Filter by',
+    'Has any value' => 'Has any value',
+    'Is empty' => 'Is empty',
 ];
