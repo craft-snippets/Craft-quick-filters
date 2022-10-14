@@ -350,6 +350,22 @@ class ElementFilter extends Model
             }));
         }
 
+        // add "has any value" and "is empty" options
+        if(in_array(get_class($field), self::FIELDS_RELATIONS) || in_array(get_class($field), self::FIELDS_OPTIONS)){
+            $options = array_merge([
+                [
+                    'value' => ':notempty:',
+                    'label' => '[' . Craft::t('quick-filters','Has any value') . ']',
+                    'level' => 1,
+                ],
+                [
+                    'value' => ':empty:',
+                    'label' => '[' . Craft::t('quick-filters','Is empty') . ']',
+                    'level' => 1,
+                ],            
+            ], $options);
+        }
+
         // lightswitch
         if(in_array(get_class($field), self::FIELDS_SWITCH)){
             $onLabel = $field->onLabel ? $field->onLabel : Craft::t('quick-filters','Enabled');
