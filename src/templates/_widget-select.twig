@@ -7,27 +7,41 @@
     class=""
 >
 {% for option in options %}
+
     {% set selected = false %}
     {% set requestOptions = craft.app.request.getBodyParam('criteria')[handle] ?? [] %}
-        {# lightswitch value is boolean, not array #}
-        {% if requestOptions is iterable %}
-            {% if option.value in requestOptions %}
-                {% set selected = true %}
-            {% endif %}
-        {% else %}
-            {% if option.value == requestOptions %}
-                {% set selected = true %}
-            {% endif %}
+
+    {# lightswitch value is boolean, not array #}
+    {% if requestOptions is iterable %}
+        {% if option.value in requestOptions %}
+            {% set selected = true %}
         {% endif %}
-    <option 
-        value="{{option.value}}" 
-        class="lvl{{option.level}} {{(option.enabled ?? false) ? 'element-filters__option-is-enabled' : 'element-filters__option-is-disabled'}} element-filters__option-type-{{type}}" 
-        style="margin-left: {{option.level - 1}}rem;"
-        {% if selected %}
-        selected
+    {% else %}
+        {% if option.value == requestOptions %}
+            {% set selected = true %}
         {% endif %}
-    >
-        {{option.label}}
-    </option>
+    {% endif %}
+
+    {# regular shorthand if caused double space appear between classes which broke select widget #}
+    {% set classes = [
+        'element-filters__option-type-' ~ type,
+    ] %}
+
+    {% if option['enabled'] is defined and option['enabled'] == true %}
+        {% set classes = classes|merge(['element-filters__option-is-enabled']) %}
+    {% endif %}
+
+    {% if option['enabled'] is defined and option['enabled'] == false %}
+        {% set classes = classes|merge(['element-filters__option-is-disabled']) %}
+    {% endif %}
+
+    {{tag('option', {
+       value: option.value,
+       class: classes,
+       style: 'padding-left: ' ~ ((option.level - 0.5)*1.5) ~ 'rem;',
+       'selected': selected,
+       text: option.label,
+    }) }}
+
 {% endfor %}
 </select>

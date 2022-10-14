@@ -151,3 +151,16 @@
     border: 1px solid #596673;
     margin-right: 2px;    
 }
+
+.ss-content .ss-list .ss-option.ss-disabled{
+    background-color: #5897fb !important;
+    color:  white !important;
+}
+.ss-content{
+    box-shadow: 5px -2px 70px -21px rgba(66, 68, 90, 1);
+    z-index: 99 !important;
+}
+.ss-multi-selected{
+    position: relative;
+    z-index: 100 !important;    
+}
