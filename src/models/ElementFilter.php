@@ -70,6 +70,10 @@ class ElementFilter extends Model
         'besteadfast\preparsefield\fields\PreparseFieldType',
     ];
 
+    const FIELDS_COLOR = [
+        'percipiolondon\colourswatches\fields\ColourSwatches',
+    ];
+
     const ATTRIBUTE_TYPE_DATE = 'date';
     const ATTRIBUTE_TYPE_NUMBER = 'number';
     const ATTRIBUTE_TYPE_TEXT = 'text';
@@ -78,6 +82,7 @@ class ElementFilter extends Model
     const SELECT_TYPE_RELATION = 'relation';
     const SELECT_TYPE_OPTIONS = 'options';
     const SELECT_TYPE_SWITCH = 'switch';
+    const SELECT_TYPE_COLOR = 'color';
 
     public function init(): void
     {
@@ -328,6 +333,29 @@ class ElementFilter extends Model
         return $options ?? [];
     }
 
+    private function getSwatchesOptionCss(array $option)
+    {
+        // multiple hex values are separated by comma
+        $string = '';
+        $coloursHexStrings = explode(',', $option['color']);
+        if(!empty($coloursHexStrings)){
+                $percentageNumber = 100 / count($coloursHexStrings);
+                $string .= 'linear-gradient(to bottom right,';
+                $loopIndex = 0;
+                foreach ($coloursHexStrings as $singleHex) {
+                    $percent = $percentageNumber * $loopIndex;
+                    $percentSecond = $percent + $percentageNumber;
+                    $string .= (' ' . $singleHex . ' ' . $percent . '% ' . $percentSecond . '%');
+                    if($loopIndex + 1 != count($coloursHexStrings)){
+                        $string .= ',';
+                    }
+                    $loopIndex ++;
+                }
+                $string .= ')';
+        }
+        return $string;
+    }
+
     private function getOptions($field)
     {
         $options = [];
@@ -350,8 +378,30 @@ class ElementFilter extends Model
             }));
         }
 
+        // color
+        if(in_array(get_class($field), self::FIELDS_COLOR)){
+            $options = array_map(function($single){
+
+                // color swatches stores value in content table as json
+                $value  = [
+                    'label' => $single['label'],
+                    'color' => $single['color'],
+                    'class' => $single['class'],
+                ];
+                $value = json_encode($value);
+
+                return [
+                    'value' => $value,
+                    'label' => $single['label'],
+                    'level' => 1,
+                    'color' => $this->getSwatchesOptionCss($single),
+                ];
+            }, $field->options);
+        }
+
+
         // add "has any value" and "is empty" options
-        if(in_array(get_class($field), self::FIELDS_RELATIONS) || in_array(get_class($field), self::FIELDS_OPTIONS)){
+        if(in_array(get_class($field), self::FIELDS_RELATIONS) || in_array(get_class($field), self::FIELDS_OPTIONS) || in_array(get_class($field), self::FIELDS_COLOR)){
             $options = array_merge([
                 [
                     'value' => ':notempty:',
@@ -405,6 +455,9 @@ class ElementFilter extends Model
         if(in_array(get_class($field), self::FIELDS_SWITCH)){
             $type = self::SELECT_TYPE_SWITCH;
         }
+        if(in_array(get_class($field), self::FIELDS_COLOR)){
+            $type = self::SELECT_TYPE_COLOR;
+        }        
         return $type;
     }
 
@@ -424,7 +477,8 @@ class ElementFilter extends Model
             (
                 in_array(get_class($field), self::FIELDS_RELATIONS) || 
                 in_array(get_class($field), self::FIELDS_OPTIONS) || 
-                in_array(get_class($field), self::FIELDS_SWITCH)
+                in_array(get_class($field), self::FIELDS_SWITCH) ||
+                in_array(get_class($field), self::FIELDS_COLOR)
             )
         ){
             $context = [
@@ -550,7 +604,8 @@ class ElementFilter extends Model
                 in_array(get_class($single), self::FIELDS_SWITCH) ||
                 in_array(get_class($single), self::FIELDS_DATE) ||
                 in_array(get_class($single), self::FILEDS_NUMBER) ||
-                in_array(get_class($single), self::FIELDS_TEXT)
+                in_array(get_class($single), self::FIELDS_TEXT) ||
+                in_array(get_class($single), self::FIELDS_COLOR)
             ){
                 return true;
             }

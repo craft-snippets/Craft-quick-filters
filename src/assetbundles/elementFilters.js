@@ -215,8 +215,8 @@ Craft.elementIndex.on('registerViewParams', function(event) {
     var select = $(this)
     if (select.val() != '') {
  
-      // options, relations
-      if(select.attr('data-element-filters-type') == 'options' || select.attr('data-element-filters-type') == 'relation'){
+      // options, relations, color
+      if(select.attr('data-element-filters-type') == 'options' || select.attr('data-element-filters-type') == 'relation' || select.attr('data-element-filters-type') == 'color'){
         var handle = select.attr('data-element-filters-handle');
         event.params.criteria[handle] = select.val();
       }

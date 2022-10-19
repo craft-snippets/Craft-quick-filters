@@ -35,10 +35,20 @@
         {% set classes = classes|merge(['element-filters__option-is-disabled']) %}
     {% endif %}
 
+    {% if option['color'] is defined and option['color'] is not empty %}
+        {% set classes = classes|merge(['element-filters__option-has-color']) %}
+    {% endif %}
+
+    {# style #}
+    {% set style = 'padding-left: ' ~ ((option.level - 0.5)*1.5) ~ 'rem;' %}
+    {% if option['color'] is defined and option['color'] is not empty %}
+        {% set style = style ~ '--gradient-bg: ' ~ option.color ~ ';' %}
+    {% endif %}
+
     {{tag('option', {
        value: option.value,
        class: classes,
-       style: 'padding-left: ' ~ ((option.level - 0.5)*1.5) ~ 'rem;',
+       style: style,
        'selected': selected,
        text: option.label,
     }) }}

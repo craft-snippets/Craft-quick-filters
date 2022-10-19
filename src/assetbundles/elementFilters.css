@@ -164,3 +164,15 @@
     position: relative;
     z-index: 100 !important;    
 }
+
+.element-filters__option-has-color:before{
+    content: '';
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+    border: 1px solid #5966733d;
+    margin-right: 4px;
+    background-image: var(--gradient-bg);
+    position: relative;
+    top: 3px;
+}
