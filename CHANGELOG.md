@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.2.0 - 2022-10-21
+### Added
+- Added Colour Swatches plugin support
+- Added "Has any value" and "Is empty" options to dropdowns
+### Changed
+- Styling improvements of dropdown widgets
+- Date range filter now uses Craft datepicker
+
 ## 2.1.0 - 2022-08-15
 ### Added
 - It is not possible to filter by entry type
