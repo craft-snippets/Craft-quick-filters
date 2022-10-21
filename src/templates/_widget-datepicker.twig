@@ -1,17 +1,24 @@
 {% set reQuestValue = craft.app.request.getBodyParam('criteria')[handle] ?? [] %}
+
 {% set start = null %}
-{% if reQuestValue[1] is defined %}
-{% set start = reQuestValue[1]|split(' ')[1] %}
-{% endif %}
 {% set end = null %}
-{% if reQuestValue[2] is defined %}
-{% set end = reQuestValue[2]|split(' ')[1] %}
-{% endif %}
+
+{% for item in reQuestValue %}
+    {% set parts = item|split(' ') %}
+    {% if parts|length == 2 %}
+        {% if parts[0] == '>=' %}
+            {% set start = parts[1] %}
+        {% endif %}
+        {% if parts[0] == '<=' %}
+            {% set end = parts[1] %}
+        {% endif %}            
+    {% endif %}
+{% endfor %}
 
 {# newly created users do not have weekstartday defined #}
-{% set weekStartDay = currentUser.getPreferences().weekStartDay ?? 1 %}
+{# {% set weekStartDay = currentUser.getPreferences().weekStartDay ?? 1 %} #}
 
-<input 
+{# <input 
     class="element-filters__datepicker"
     data-element-filters-datepicker
     data-element-filters-datepicker-firstday="{{weekStartDay}}"
@@ -28,4 +35,30 @@
     {% if end %}
     data-element-filters-datepicker-end="{{end}}"
     {% endif %}
+> #}
+
+<div
+    class="element-filters__range"
+    data-elements-filters-date
+    data-element-filters-handle="{{handle}}"
+    data-element-filters-date-format="{{dateFormat}}"
 >
+    <input 
+        type="text"
+        class="element-filters__range-input"
+        data-elements-filters-date-input
+        data-elements-filters-date-min
+        placeholder="{{'From'|t('quick-filters')}}"
+        value=""
+        data-initial-value="{{start}}"
+    >
+    <input 
+        type="text"
+        class="element-filters__range-input"
+        data-elements-filters-date-input
+        data-elements-filters-date-max
+        placeholder="{{'To'|t('quick-filters')}}"
+        value=""
+        data-initial-value="{{end}}"
+    >
+</div>

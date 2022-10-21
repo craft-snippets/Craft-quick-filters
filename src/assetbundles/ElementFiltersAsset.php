@@ -22,13 +22,13 @@ class ElementFiltersAsset extends AssetBundle
             'elementFilters.js',
             'lib/slimselect.min.js',
             'lib/moment.min.js',
-            'lib/daterangepicker.min.js',
+            // 'lib/daterangepicker.min.js',
         ];
 
         $this->css = [
             'elementFilters.css',
             'lib/slimselect.min.css',
-            'lib/daterangepicker.css',
+            // 'lib/daterangepicker.css',
         ];
 
         parent::init();
