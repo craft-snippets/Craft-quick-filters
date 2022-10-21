@@ -38,27 +38,33 @@
 > #}
 
 <div
-    class="element-filters__range"
+    class="element-filters__date"
     data-elements-filters-date
     data-element-filters-handle="{{handle}}"
     data-element-filters-date-format="{{dateFormat}}"
 >
-    <input 
-        type="text"
-        class="element-filters__range-input"
-        data-elements-filters-date-input
-        data-elements-filters-date-min
-        placeholder="{{'From'|t('quick-filters')}}"
-        value=""
-        data-initial-value="{{start}}"
-    >
-    <input 
-        type="text"
-        class="element-filters__range-input"
-        data-elements-filters-date-input
-        data-elements-filters-date-max
-        placeholder="{{'To'|t('quick-filters')}}"
-        value=""
-        data-initial-value="{{end}}"
-    >
+    <div class="element-filters__date-input-container">        
+        <input 
+            type="text"
+            class="element-filters__date-input"
+            data-elements-filters-date-input
+            data-elements-filters-date-min
+            placeholder="{{'From'|t('app')}}"
+            value=""
+            data-initial-value="{{start}}"
+        >
+        <div class="element-filters__date-icon" data-icon="date"></div>
+    </div>
+    <div class="element-filters__date-input-container">        
+        <input 
+            type="text"
+            class="element-filters__date-input"
+            data-elements-filters-date-input
+            data-elements-filters-date-max
+            placeholder="{{'To'|t('app')}}"
+            value=""
+            data-initial-value="{{end}}"
+        >
+        <div class="element-filters__date-icon" data-icon="date"></div>
+    </div>
 </div>
