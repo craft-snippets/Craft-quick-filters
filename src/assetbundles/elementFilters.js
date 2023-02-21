@@ -132,41 +132,7 @@ function initWidgets(){
 
     });
 
-    // datepicker
-    // $('[data-element-filters-datepicker]').each(function(){
-    //     // var format = 'DD-MM-YYYY';
-    //     var format = $(this).attr('data-element-filters-datepicker-format');
-    //     var firstDay = parseInt($(this).attr('data-element-filters-datepicker-firstday'));
-    //     var cancelLabel = $(this).attr('data-element-filters-datepicker-cancel');
-    //     var applyLabel = $(this).attr('data-element-filters-datepicker-apply');
-    //     var daysOfWeek = JSON.parse($(this).attr('data-element-filters-datepicker-weekdays'));
-    //     var monthNames = JSON.parse($(this).attr('data-element-filters-datepicker-months'));
-        
-    //     $(this).daterangepicker({
-    //       opens: 'left',
-    //       autoUpdateInput: false,
-    //       locale: {
-    //         "format": format,
-    //         "firstDay": firstDay,
-    //         "cancelLabel": cancelLabel,
-    //         "applyLabel": applyLabel,
-    //         "daysOfWeek": daysOfWeek,
-    //         "monthNames": monthNames,
-    //       }
-    //     });
 
-    //     // set valiue after reload
-    //     if($(this).attr('data-element-filters-datepicker-start') !== undefined){
-    //         var start = $(this).attr('data-element-filters-datepicker-start');
-    //         var end = $(this).attr('data-element-filters-datepicker-end');
-    //         console.log(start)
-    //         $(this).data('daterangepicker').setStartDate(moment(start).format("MM-DD-YYYY"));
-    //         $(this).data('daterangepicker').setEndDate(moment(end).format("MM-DD-YYYY"));      
-    //         var format = $(this).attr('data-element-filters-datepicker-format');
-    //         $(this).val(moment(start).format(format) + ' - ' + moment(end).format(format));                              
-    //     }
-
-    // });
     $('[data-elements-filters-date-input]').each(function(){
 
         var format = $(this).closest('[data-element-filters-date-format]').attr('data-element-filters-date-format');
@@ -184,25 +150,6 @@ function initWidgets(){
 
     });
 
-    // $('[data-elements-filters-date-input]').datepicker($.extend({
-    //     defaultDate: new Date()
-    // }, Craft.datepickerOptions));
-
-
-    // set text input value
-    // $('[data-element-filters-datepicker]').on('apply.daterangepicker', function(ev, picker) {
-    //     // var format = 'DD-MM-YYYY';
-    //     var format = $(this).attr('data-element-filters-datepicker-format');
-    //     $(this).val(picker.startDate.format(format) + ' - ' + picker.endDate.format(format));
-    // });
-
-    // // clear on cancel
-    // $('[data-element-filters-datepicker]').on('cancel.daterangepicker', function(ev, picker) {
-    //     $(this).data('daterangepicker').setStartDate(moment().format("MM-DD-YYYY"));
-    //     $(this).data('daterangepicker').setEndDate(moment().format("MM-DD-YYYY"));
-    //     $(this).val('');
-    //     elementIndexObject.updateElements();
-    // });  
 }
 
 // we check for sourcekey because on asset list event fired two times
@@ -216,10 +163,6 @@ Garnish.on(Craft.BaseElementIndex, 'updateElements', (ev) => {
 $('body').on('change', '[data-element-filters-select]', function(){
   elementIndexObject.updateElements();
 });
-
-// $('body').on('apply.daterangepicker', '[data-element-filters-datepicker]', function(ev, picker) {
-//   elementIndexObject.updateElements();
-// });
 
 $('body').on('change', '[data-elements-filters-range-input], [data-elements-filters-date-input]', function(){
   elementIndexObject.updateElements();
@@ -264,15 +207,6 @@ elementIndexObject = null;
     }
   });
 
-  // datepicker
-  // $('[data-element-filters-datepicker]').each(function(){
-  //   if($(this).val() != ''){
-  //     handle = $(this).attr('data-element-filters-handle');
-  //     var start = $(this).data('daterangepicker').startDate.startOf('day').format('YYYY-MM-DD HH:mm:ss');
-  //     var end = $(this).data('daterangepicker').endDate.endOf('day').format('YYYY-MM-DD HH:mm:ss');
-  //     event.params.criteria[handle] = ['and', '>= ' + start, '<= ' + end];
-  //   }
-  // });
 
   $('[data-elements-filters-date-input]').each(function(){
     var min = null;
@@ -383,7 +317,6 @@ elementIndexObject = null;
 
 
 // clear filters
-// $('body').on('click', '[data-element-filter-clear]', function(){
   // jquery wont work with modal
   document.body.addEventListener("click",function(e){
 
@@ -399,13 +332,6 @@ elementIndexObject = null;
     //text
     $('[data-element-filters-handle="' + handle + '"][data-elements-filters-text]').val('');
 
-    // datepicker
-    // var pickerElement = $('[data-element-filters-datepicker][data-element-filters-handle="' + handle + '"]');
-    // if(pickerElement.length){
-    //     pickerElement.data('daterangepicker').setStartDate(moment().format("MM-DD-YYYY"));
-    //     pickerElement.data('daterangepicker').setEndDate(moment().format("MM-DD-YYYY"));
-    //     pickerElement.val('');
-    // }
     $('[data-element-filters-handle="' + handle + '"]').find('[data-elements-filters-date-input]').val('');
 
 
@@ -414,7 +340,6 @@ elementIndexObject = null;
     if(dropdownElement.length){
         // we need to destroy slim select because if we change its value programitically and refresh craft element list, class "busy" does not appear on list
         dropdownElement[0].slim.destroy();
-        // dropdownElement[0].slim.set([]);
         dropdownElement.find("option:selected").prop("selected", false);
         initSelect(dropdownElement);
     }
