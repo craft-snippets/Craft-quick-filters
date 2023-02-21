@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-if (typeof Craft.elementIndex != 'undefined') {
+// if (typeof elementIndexObject != 'undefined') {
 
 // on page load
 addFilters(getDataKey($('#sidebar [data-key].sel')));
@@ -201,35 +201,41 @@ function initWidgets(){
     //     $(this).data('daterangepicker').setStartDate(moment().format("MM-DD-YYYY"));
     //     $(this).data('daterangepicker').setEndDate(moment().format("MM-DD-YYYY"));
     //     $(this).val('');
-    //     Craft.elementIndex.updateElements();
+    //     elementIndexObject.updateElements();
     // });  
 }
 
 // we check for sourcekey because on asset list event fired two times
-Craft.elementIndex.on('updateElements', function(event) {
+
+Garnish.on(Craft.BaseElementIndex, 'updateElements', (ev) => {
     initWidgets();
 });
 
 
 // trigger refresh
 $('body').on('change', '[data-element-filters-select]', function(){
-  Craft.elementIndex.updateElements();
+  elementIndexObject.updateElements();
 });
 
 // $('body').on('apply.daterangepicker', '[data-element-filters-datepicker]', function(ev, picker) {
-//   Craft.elementIndex.updateElements();
+//   elementIndexObject.updateElements();
 // });
 
 $('body').on('change', '[data-elements-filters-range-input], [data-elements-filters-date-input]', function(){
-  Craft.elementIndex.updateElements();
+  elementIndexObject.updateElements();
 });
 
 $('body').on('change', '[data-elements-filters-text]', function(){
-  Craft.elementIndex.updateElements();
+  elementIndexObject.updateElements();
 });
 
+
+elementIndexObject = null;
+
 // modify params
-Craft.elementIndex.on('registerViewParams', function(event) {
+  Garnish.on(Craft.BaseElementIndex, 'registerViewParams', (event) => {
+
+  elementIndexObject = event.target;
 
   // selects
   $('[data-element-filters-select]').each(function(){
@@ -377,10 +383,15 @@ Craft.elementIndex.on('registerViewParams', function(event) {
 
 
 // clear filters
-$('body').on('click', '[data-element-filter-clear]', function(){
-  
-    var handle = $(this).attr('data-element-filter-clear-handle');
-    // console.log(handle)
+// $('body').on('click', '[data-element-filter-clear]', function(){
+  // jquery wont work with modal
+  document.body.addEventListener("click",function(e){
+
+    if(!e.target.matches('[data-element-filter-clear]')){
+      return;
+    }
+
+    var handle = $(e.target).attr('data-element-filter-clear-handle');
 
     // range
     $('[data-element-filters-handle="' + handle + '"]').find('[data-elements-filters-range-input]').val('');
@@ -409,11 +420,11 @@ $('body').on('click', '[data-element-filter-clear]', function(){
     }
     
 
-    Craft.elementIndex.updateElements();
+    elementIndexObject.updateElements();
 
-});
+}, true);
 
 
-}
+// }
 
 });

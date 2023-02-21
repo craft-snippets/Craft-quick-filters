@@ -8,6 +8,10 @@
     margin-bottom: 3rem;
 }
 
+.modal .element-filters__group{
+    margin-bottom: 1rem;
+}
+
 .element-filters__single{
 	width: 25%;
 	margin-top: 7px;
