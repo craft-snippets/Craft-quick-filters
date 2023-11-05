@@ -1,4 +1,4 @@
-$(document).ready(function(){
+(function(){
 
 // if (typeof elementIndexObject != 'undefined') {
 
@@ -352,4 +352,4 @@ elementIndexObject = null;
 
 // }
 
-});
+})();
