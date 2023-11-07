@@ -33,7 +33,7 @@ Since Craft CMS 4, users can filter element index lists. However, filtering func
 * After adding multiple filters, you can also reorder them on the filters list.
 * Keep in mind that separate content groups, for example, separate entry sections can have separate filter layouts.
 
-![Screenshot](resources/link.png)
+![Screenshot](resources/link2.png)
 
 ## Requirements
 
