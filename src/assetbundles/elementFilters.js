@@ -3,7 +3,9 @@
 // if (typeof elementIndexObject != 'undefined') {
 
 // on page load
-addFilters(getDataKey($('#sidebar [data-key].sel')));
+$(document).ready(function(){
+    addFilters(getDataKey($('#sidebar [data-key].sel')));
+})
 
 // on changing source
 $('#sidebar [data-key]').on('click', function(){
@@ -92,7 +94,7 @@ function addFilters(sourceKey){
   if(userCanManageFilters){
       $('.element-filters-settings').remove();
       var linkUrl = Craft.getCpUrl('quick-filters/' + elementType + '/' +  sourceKey);
-      $('<a href="'+ linkUrl +'" class="customize-sources element-filters-settings" type="button"><span class="element-filters-settings__icon" data-icon="tool"></span><span class="label">Filters</span></a>').appendTo('#sidebar');    
+      $('<a href="'+ linkUrl +'" class="customize-sources element-filters-settings btn edit icon" type="button"><span class="label">Filters</span></a>').appendTo('#sidebar');
   }
 
 }

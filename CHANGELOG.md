@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.2.2 - 2023-11-07
+### Fixed
+- Fixd bug when sometimes filters JS was not initialized
+### Changed
+- Changed the look of filter settings link
+
 ## 2.2.1 - 2023-02-21
 ### Fixed
 - Filters now work properly in element selection modals

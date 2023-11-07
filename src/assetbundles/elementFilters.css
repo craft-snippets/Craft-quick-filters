@@ -79,10 +79,6 @@
     margin-top: -0.5rem !important;
 }
 
-.element-filters-settings__icon{
-    margin-right: 7px;
-}
-
 /*remove annoying animation*/
 .ss-main .ss-multi-selected .ss-values .ss-value{
     animation-duration: 0s !important;    
