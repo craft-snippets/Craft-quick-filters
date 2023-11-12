@@ -25,12 +25,17 @@ class ElementFilter extends Model
     public $fieldId;
     public $elementAttribute;
     public $filterType;
+    public $orderOptionsBy;
 
     const JSON_PROPERTIES = [
         'fieldId',
         'elementAttribute',
-        'filterType'
+        'filterType',
+        'orderOptionsBy'
     ];
+
+    const SORT_DEFAULT = 'default';
+    const SORT_ALPHABETICALLY = 'alphabetically';
 
     const FILTER_TYPE_FIELD = 'field';
     const FILTER_TYPE_ATTRIBUTE = 'attribute';
@@ -113,9 +118,40 @@ class ElementFilter extends Model
         return $jsonSettings;
     }
 
+    public function getSortOptions()
+    {
+        return [
+            [
+                'value' => self::SORT_DEFAULT,
+                'label' => Craft::t('quick-filters', 'Default order'),
+            ],
+            [
+                'value' => self::SORT_ALPHABETICALLY,
+                'label' => Craft::t('quick-filters', 'Alphabetically'),
+            ],
+        ];
+    }
 
     private function getRelationFieldOptions($craftField)
     {
+        $mapArrayRecursively = function ($array, $callback) use (&$mapArrayRecursively) {
+            $mappedArray = [];
+            foreach ($array as $key => $value) {
+                // Apply the callback to the current element
+                $mappedArray[$key] = $callback($value);
+
+                // If the element has children and is an array, recursively map them
+                if ($value->hasDescendants) {
+                    $mappedArray[$key]['children'] = $mapArrayRecursively($value->getChildren(), $callback);
+                }
+
+            }
+            if($this->orderOptionsBy == self::SORT_ALPHABETICALLY){
+                ArrayHelper::multisort($mappedArray, 'label');
+            }
+            return $mappedArray;
+        };
+
         // entry
         if(get_class($craftField) == 'craft\fields\Entries'){
             if(is_array($craftField->sources)){
@@ -132,7 +168,7 @@ class ElementFilter extends Model
                 }
                 $elements = [];
                 if(!empty($handles)){
-                    $elements = \craft\elements\Entry::find()->section($handles)->anyStatus()->all();
+                    $elements = \craft\elements\Entry::find()->section($handles)->anyStatus()->level(1)->all();
                 }
 
                 // singles
@@ -140,23 +176,26 @@ class ElementFilter extends Model
                     if($source == 'singles'){
                         $singlesSections = Craft::$app->getSections()->getSectionsByType('single');
                         $singleHandles = array_column($singlesSections, 'handle');
-                        $singles = \craft\elements\Entry::find()->section($singleHandles)->anyStatus()->all();
+                        $singles = \craft\elements\Entry::find()->section($singleHandles)->anyStatus()->level(1)->all();
                         $elements = array_merge($elements, $singles);
                     }
                 }                
 
             }else if($craftField->sources == '*'){
-                $elements = \craft\elements\Entry::find()->anyStatus()->all();
+                $elements = \craft\elements\Entry::find()->anyStatus()->level(1)->all();
             }
-            $options = array_map(function($single){
+
+            $options = $mapArrayRecursively($elements, function ($single) {
                 return [
                     'value' => $single->id,
                     'label' => $single->title,
                     // non structures have level null
                     'level' => $single->level ?? 1,
                     'enabled' => $single->enabled,
+                    'children' => [],
                 ];
-            }, $elements);                    
+            });
+
         }
 
         // category
@@ -165,20 +204,22 @@ class ElementFilter extends Model
             $group = Craft::$app->getCategories()->getGroupByUid($uid);
             if($group != null){
                 $handle = Craft::$app->getCategories()->getGroupByUid($uid)['handle'];
-                $elements = \craft\elements\Category::find()->anyStatus()->group($handle)->all();
-                $options = array_map(function($single){
+                $elements = \craft\elements\Category::find()->anyStatus()->group($handle)->level(1)->all();
+
+                $options = $mapArrayRecursively($elements, function ($single) {
                     return [
                         'value' => $single->id,
                         'label' => $single->title,
                         'level' => $single->level,
                         'enabled' => $single->enabled,
+                        'children' => [],
                     ];
-                }, $elements);
+                });
+
             }else{
                 $options = [];
             }
-            
-                     
+
         }
 
         // asset
@@ -376,6 +417,9 @@ class ElementFilter extends Model
             }, array_filter($field->options, function($single){
                 return !array_key_exists('optgroup', $single);
             }));
+            if($this->orderOptionsBy == self::SORT_ALPHABETICALLY){
+                ArrayHelper::multisort($options, 'label');
+            }
         }
 
         // color
@@ -397,6 +441,9 @@ class ElementFilter extends Model
                     'color' => $this->getSwatchesOptionCss($single),
                 ];
             }, $field->options);
+            if($this->orderOptionsBy == self::SORT_ALPHABETICALLY){
+                ArrayHelper::multisort($options, 'label');
+            }
         }
 
 
@@ -461,6 +508,21 @@ class ElementFilter extends Model
         return $type;
     }
 
+    public function getFieldsIdsUsingSelect()
+    {
+        $craftFields = Craft::$app->getFields()->allFields;
+        $craftFields = array_filter($craftFields, function($single){
+            if(
+                in_array(get_class($single), self::FIELDS_RELATIONS) ||
+                in_array(get_class($single), self::FIELDS_OPTIONS) ||
+                in_array(get_class($single), self::FIELDS_COLOR)
+            ){
+                return true;
+            }
+        });
+        $ids = array_column($craftFields, 'id');
+        return $ids;
+    }
 
     public function render()
     {
@@ -1006,8 +1068,6 @@ class ElementFilter extends Model
 
     private function getEntryTypeOptions()
     {
-
-
         // only entries
         if($this->elementType != 'entries'){
             return [];

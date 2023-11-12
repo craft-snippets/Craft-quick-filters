@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.0 - 2023-11-12
+### Added
+- Dropdown filters options can be now sorted alphabetically
+
 ## 2.2.2 - 2023-11-07
 ### Fixed
 - Fixd bug when sometimes filters JS was not initialized

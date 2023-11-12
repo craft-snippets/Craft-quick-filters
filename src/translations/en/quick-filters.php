@@ -51,4 +51,7 @@ return [
     'Filter by' => 'Filter by',
     'Has any value' => 'Has any value',
     'Is empty' => 'Is empty',
+    'Order options by' => 'Order options by',
+    'Default order' => 'Default order',
+    'Alphabetically' => 'Alphabetically',
 ];

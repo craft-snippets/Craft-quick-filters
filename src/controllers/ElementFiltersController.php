@@ -144,9 +144,15 @@ public function actionFilterSave()
         }
 
         // set params from POST data
-        $filterObject->fieldId = $request->getBodyParam('fieldId');
-        $filterObject->elementAttribute = $request->getBodyParam('elementAttribute');
-        $filterObject->filterType = $request->getBodyParam('filterType');
+
+//        $filterObject->fieldId = $request->getBodyParam('fieldId');
+//        $filterObject->elementAttribute = $request->getBodyParam('elementAttribute');
+//        $filterObject->filterType = $request->getBodyParam('filterType');
+
+        foreach ($filterObject::JSON_PROPERTIES as $property) {
+            $filterObject->$property = $request->getBodyParam($property);
+        }
+
         $filterObject->elementType = $request->getBodyParam('elementType');
         $filterObject->sourceKey = $request->getBodyParam('sourceKey');
         // $filterObject->order = 1;

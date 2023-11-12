@@ -1,4 +1,4 @@
-<select {{multiple ? 'multiple'}} 
+<select {{multiple ? 'multiple'}}
     data-element-filters-type="{{type}}"
     data-element-filters-handle="{{handle}}"
     data-element-filters-select
@@ -6,52 +6,61 @@
     data-element-filters-search-select-placeholder="{{'Search'|t('quick-filters')}}"
     class=""
 >
-{% for option in options %}
+    {% macro optionsList(options, type, handle) %}
+        {% for option in options %}
 
-    {% set selected = false %}
-    {% set requestOptions = craft.app.request.getBodyParam('criteria')[handle] ?? [] %}
+            {% set selected = false %}
+            {% set requestOptions = craft.app.request.getBodyParam('criteria')[handle] ?? [] %}
 
-    {# lightswitch value is boolean, not array #}
-    {% if requestOptions is iterable %}
-        {% if option.value in requestOptions %}
-            {% set selected = true %}
-        {% endif %}
-    {% else %}
-        {% if option.value == requestOptions %}
-            {% set selected = true %}
-        {% endif %}
-    {% endif %}
+            {# lightswitch value is boolean, not array #}
+            {% if requestOptions is iterable %}
+                {% if option.value in requestOptions %}
+                    {% set selected = true %}
+                {% endif %}
+            {% else %}
+                {% if option.value == requestOptions %}
+                    {% set selected = true %}
+                {% endif %}
+            {% endif %}
 
-    {# regular shorthand if caused double space appear between classes which broke select widget #}
-    {% set classes = [
-        'element-filters__option-type-' ~ type,
-    ] %}
+            {# regular shorthand if caused double space appear between classes which broke select widget #}
+            {% set classes = [
+                'element-filters__option-type-' ~ type,
+            ] %}
 
-    {% if option['enabled'] is defined and option['enabled'] == true %}
-        {% set classes = classes|merge(['element-filters__option-is-enabled']) %}
-    {% endif %}
+            {% if option['enabled'] is defined and option['enabled'] == true %}
+                {% set classes = classes|merge(['element-filters__option-is-enabled']) %}
+            {% endif %}
 
-    {% if option['enabled'] is defined and option['enabled'] == false %}
-        {% set classes = classes|merge(['element-filters__option-is-disabled']) %}
-    {% endif %}
+            {% if option['enabled'] is defined and option['enabled'] == false %}
+                {% set classes = classes|merge(['element-filters__option-is-disabled']) %}
+            {% endif %}
 
-    {% if option['color'] is defined and option['color'] is not empty %}
-        {% set classes = classes|merge(['element-filters__option-has-color']) %}
-    {% endif %}
+            {% if option['color'] is defined and option['color'] is not empty %}
+                {% set classes = classes|merge(['element-filters__option-has-color']) %}
+            {% endif %}
 
-    {# style #}
-    {% set style = 'padding-left: ' ~ ((option.level - 0.5)*1.5) ~ 'rem;' %}
-    {% if option['color'] is defined and option['color'] is not empty %}
-        {% set style = style ~ '--gradient-bg: ' ~ option.color ~ ';' %}
-    {% endif %}
+            {# style #}
+            {% set style = 'padding-left: ' ~ ((option.level - 0.5)*1.5) ~ 'rem;' %}
+            {% if option['color'] is defined and option['color'] is not empty %}
+                {% set style = style ~ '--gradient-bg: ' ~ option.color ~ ';' %}
+            {% endif %}
 
-    {{tag('option', {
-       value: option.value,
-       class: classes,
-       style: style,
-       'selected': selected,
-       text: option.label,
-    }) }}
+            {{tag('option', {
+                value: option.value,
+                class: classes,
+                style: style,
+                'selected': selected,
+                text: option.label,
+            }) }}
 
-{% endfor %}
+            {% if option['children'] is defined and option['children'] is not empty %}
+                {{ _self.optionsList(option.children, type, handle) }}
+            {% endif %}
+
+        {% endfor %}
+    {% endmacro %}
+
+    {{ _self.optionsList(options, type, handle) }}
+
 </select>

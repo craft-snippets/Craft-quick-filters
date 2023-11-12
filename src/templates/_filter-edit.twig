@@ -15,10 +15,8 @@
 
 {% block content %}
 
-
-
-
     {# filter type #}
+    <div data-element-filters-type class="field">
     {{ forms.selectField({
         label: 'Type of filter'|t('quick-filters'),
         id: 'filterType',
@@ -27,7 +25,8 @@
         value: filterObject.filterType,
         errors: filterObject.getErrors('filterType'),
         required: true,
-    }) }}    
+    }) }}
+    </div>
 
     {# field #}
     <div data-element-filters-select-field {{filterObject.filterType == 'attribute' ? 'hidden'}}>
@@ -39,10 +38,9 @@
         value: filterObject.fieldId,
         errors: filterObject.getErrors('fieldId'),
         instructions: 'You can create filters from date fields, relation type fields, fields with multiple options, number fields, text fields and lightswitch fields.'|t('quick-filters'),
+        required: true,
     }) }}
     </div>
-
-    
 
     {# element attribute #}
     <div data-element-filters-select-attribute {{filterObject.filterType == 'field' or filterObject.filterType == null ? 'hidden'}}>
@@ -56,11 +54,21 @@
     }) }}
     </div>
 
-    {# <pre>{{ dump(filterObject.getErrors()) }}</pre> #}
+    <div data-element-filters-sort-order hidden class="field">
+    {# order by #}
+    {{ forms.selectField({
+        label: 'Order options by'|t('quick-filters'),
+        id: 'orderOptionsBy',
+        name: 'orderOptionsBy',
+        options: filterObject.getSortOptions(),
+        value: filterObject.orderOptionsBy,
+        errors: filterObject.getErrors('orderOptionsBy'),
+    }) }}
+    </div>
 
+    {# params #}
     {{actionInput('quick-filters/element-filters/filter-save')}}
     {{redirectInput('quick-filters/' ~ elementType ~ '/' ~ sourceKey)}}
-
     {% if not isNew %}
         {{hiddenInput('filterId', filterObject.id)}}
     {% endif %}
@@ -68,13 +76,13 @@
     {{hiddenInput('elementType', elementType)}}
     {{hiddenInput('sourceKey', sourceKey)}}    
 
-{% endblock %}
+
 
 {% css %}
     #fieldId-field{
         margin-top: 0px;
     }
-    #fieldId-field .select, #filterType, #elementAttribute{
+    #fieldId-field .select, #filterType, #elementAttribute, #orderOptionsBy{
         width:  300px;
     }
     #fieldId-field .select:not(.selectize):after{
@@ -94,7 +102,6 @@ new SlimSelect({
   searchPlaceholder: "{{'Search'|t('quick-filters')}}",
 });
 
-
 $('#filterType').on('change', function(){
     if($(this).val() == 'field'){
         $('[data-element-filters-select-field]').show();
@@ -105,4 +112,31 @@ $('#filterType').on('change', function(){
     }
 });
 
+function toggleSorting()
+{
+    let selectFieldIds = {{ filterObject.getFieldsIdsUsingSelect|json_encode|raw }};
+    let selectAttributes = [];
+
+    let filterType = $('[data-element-filters-type] select').val();
+    let fieldId = parseInt($('[data-element-filters-select-field] select').val());
+    let attribute = $('[data-element-filters-select-attribute] select').val();
+    if(
+        (filterType == 'field' && selectFieldIds.includes(fieldId)) ||
+        (filterType == 'attribute' && selectAttributes.includes(attribute))
+    ){
+        $('[data-element-filters-sort-order]').show();
+    }else{
+        $('[data-element-filters-sort-order]').hide();
+    }
+}
+
+$('[data-element-filters-type] select, [data-element-filters-select-field] select, [data-element-filters-select-attribute] select').on('change', function(){
+    toggleSorting();
+});
+
+$(document).ready(function(){
+    toggleSorting();
+})
+
 {% endjs %}
+{% endblock %}
