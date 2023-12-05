@@ -4,7 +4,7 @@
 		<div class="element-filters__single">
 			<div class="element-filters__single-top">
 				<div class="element-filters__single-label">
-					{{singleFilter.name}}
+					{{singleFilter.getElementIndexName()}}
 				</div>
 				{% if singleFilter.hasValue() %}
 				<button 
@@ -17,6 +17,8 @@
 			</div>
 			<div class="element-filters__single-widget">
 				{{singleFilter.render()}}
+{#				{{ dump(singleFilter) }}#}
+{#				{{ dump(singleFilter.getCustomLabel()) }}#}
 			</div>
 		</div>
 	{% endfor %}

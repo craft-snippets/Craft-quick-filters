@@ -75,10 +75,16 @@ public function actionFilterEdit($elementType, $sourceKey, int $filterId = null,
     $elementAndGroupName = $groupData['elementName'] . ' - ' . $groupData['groupName'];
     
     // field
-    $craftFields = array_map(function($single){
+    $craftFields = array_map(function($single) use($elementType, $sourceKey){
+        $customLabel = ElementFilters::getInstance()->filters->getFieldLabelForFilter($elementType, $sourceKey, $single);
+        if(!is_null($customLabel)){
+            $label = $customLabel . ' (' . $single->name . ')';
+        }else{
+            $label = $single->name;
+        }
         return [
             'value' => $single->id,
-            'label' => $single->name,
+            'label' => $label,
         ];
     }, $filterObject->avaibleFields);
     $empty = [[
@@ -144,11 +150,6 @@ public function actionFilterSave()
         }
 
         // set params from POST data
-
-//        $filterObject->fieldId = $request->getBodyParam('fieldId');
-//        $filterObject->elementAttribute = $request->getBodyParam('elementAttribute');
-//        $filterObject->filterType = $request->getBodyParam('filterType');
-
         foreach ($filterObject::JSON_PROPERTIES as $property) {
             $filterObject->$property = $request->getBodyParam($property);
         }

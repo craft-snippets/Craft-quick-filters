@@ -422,7 +422,6 @@ public function removeFiltersOnEvents()
 
 public function injectFilterHtml()
 {
-
     \yii\base\Event::on(
         \craft\web\View::class,
         \craft\web\View::EVENT_AFTER_RENDER_TEMPLATE,
@@ -477,8 +476,74 @@ public function injectFilterHtml()
             );
             $event->output = $filtersHtml . $event->output;
         }
-    );   
+    );
+}
 
+    public function getTableAttributes($elementType, $sourceKey)
+    {
+        $fieldLayout = null;
+
+        if($sourceKey == 'all'){
+            $sourceKey = '*';
+        }
+
+        switch ($elementType) {
+
+            case 'entries':
+                return Craft::$app->getElementSources()->getTableAttributes(\craft\elements\Entry::class, $sourceKey);
+                break;
+            case 'categories':
+                $fieldLayout = Craft::$app->categories->getGroupByUid($uid)->getFieldLayout() ?? null;
+                break;
+            case 'assets':
+                $fieldLayout = Craft::$app->volumes->getVolumeByUid($uid)->getFieldLayout() ?? null;
+                break;
+            case 'users':
+                $fieldLayout = Craft::$app->getFields()->getLayoutByType(\craft\elements\User::class) ?? null;
+                break;
+            case 'products':
+                $fieldLayout = \craft\commerce\Plugin::getInstance()->getProductTypes()->getProductTypeByUid($uid)->getFieldLayout() ?? null;
+                break;
+            case 'orders':
+                $fieldLayout = Craft::$app->getFields()->getLayoutByType(\craft\elements\Order::class) ?? null;
+                break;
+        }
+        return null;
+    }
+
+public function getFieldLabelForFilter($elementType, $sourceKey, $field)
+{
+    $tableAttributes = $this->getTableAttributes($elementType, $sourceKey);
+    $matchingTableAttributes = array_filter($tableAttributes, function($single) use($field){
+        if(!isset($single[0]) || !isset($single[1]) || !isset($single[1]['label'])){
+            return false;
+        }
+        $key = $single[0];
+        $parts = explode(':', $key);
+
+
+        if(count($parts) != 2){
+            return false;
+        }
+
+        $field = Craft::$app->getFields()->getFieldByUid($parts[1]);
+
+        if(is_null($field)){
+            return false;
+        }
+
+        if($field->id == $field->id){
+            return true;
+        }
+        return false;
+    });
+
+    $matching = reset($matchingTableAttributes);
+    if(empty($matching)){
+        return null;
+    }
+
+    return $matching[1]['label'];
 }
 
 

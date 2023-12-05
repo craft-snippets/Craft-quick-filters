@@ -4,6 +4,7 @@ namespace craftsnippets\elementfilters\models;
 
 use Craft;
 use craft\base\Model;
+use craft\gql\types\elements\Asset;
 use craft\helpers\UrlHelper;
 use craft\helpers\Template;
 use craft\helpers\ArrayHelper;
@@ -117,6 +118,8 @@ class ElementFilter extends Model
         $jsonSettings = json_encode($jsonSettings);
         return $jsonSettings;
     }
+
+
 
     public function getSortOptions()
     {
@@ -697,7 +700,42 @@ class ElementFilter extends Model
         return $attribute;
     }
 
+    public function getCustomLabel()
+    {
+        if(is_null($this->fieldId)){
+            return;
+        }
+
+        $field = Craft::$app->getFields()->getFieldById((int)$this->fieldId);
+        if(is_null($field)){
+            return null;
+        }
+
+
+        $label = ElementFilters::getInstance()->filters->getFieldLabelForFilter($this->elementType, $this->sourceKey, $field);
+        return $label;
+    }
+
+    public function getElementIndexName()
+    {
+        if(!is_null($this->getCustomLabel())){
+            return $this->getCustomLabel();
+        }
+        return $this->getNativeName();
+    }
+
     public function getName()
+    {
+        return $this->getNativeName();
+//        if(!is_null($this->getCustomLabel())){
+//            return $this->getCustomLabel() . ' (' . $this->getNativeName() . ')';
+//        }else{
+//            return $this->getNativeName();
+//        }
+//        return $this->getElementIndexName();
+    }
+
+    public function getNativeName()
     {
         $name = null;
         if($this->filterType == self::FILTER_TYPE_FIELD && $this->fieldId != null){
