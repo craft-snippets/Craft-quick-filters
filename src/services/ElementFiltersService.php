@@ -305,24 +305,6 @@ private function _createFilterFromRecord(FilterRecord $record = null)
     return $filter;
 }
 
-public function injectAssets()
-{
-    if (!Craft::$app->getRequest()->getIsCpRequest()) {
-        return false;
-    }
-    if(Craft::$app->getUser()->getIdentity() == null || !Craft::$app->getUser()->getIdentity()->can('accessCp')){
-        return false;
-    }
-
-    $hasPermission = Craft::$app->getUser()->getIdentity()->can('accessPlugin-quick-filters');
-    Craft::$app->view->registerJs(
-        'var userCanManageFilters = ' . json_encode($hasPermission) . ';',
-        Craft::$app->view::POS_BEGIN
-    );
-
-    Craft::$app->view->registerAssetBundle(\craftsnippets\elementfilters\assetbundles\ElementFiltersAsset::class);
-}
-
 public function removeFiltersOnEvents()
 {
     // on field delete
@@ -431,6 +413,15 @@ public function injectFilterHtml()
             if($event->template != '_elements/tableview/container'){
                 return;
             }
+
+            // inject asset bundle
+            $currentUser = Craft::$app->getUser()->getIdentity();
+            $hasPermission = $currentUser->can('accessPlugin-quick-filters');
+            Craft::$app->view->registerJs(
+                'var userCanManageFilters = ' . json_encode($hasPermission) . ';',
+                Craft::$app->view::POS_BEGIN
+            );
+            Craft::$app->view->registerAssetBundle(\craftsnippets\elementfilters\assetbundles\ElementFiltersAsset::class);
 
             $elementType = Craft::$app->getRequest()->getBodyParam('elementType');
             $sourceKey = Craft::$app->getRequest()->getBodyParam('source');

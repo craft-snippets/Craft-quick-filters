@@ -75,12 +75,11 @@ class ElementFilters extends Plugin
             'filters' => \craftsnippets\elementfilters\services\ElementFiltersService::class,
         ]);
 
-
-        $this->filters->injectAssets();
-
         $this->filters->removeFiltersOnEvents();
 
-        $this->filters->injectFilterHtml();
+        Craft::$app->onInit(function() {
+            $this->filters->injectFilterHtml();
+        });
 
         // routes
         Event::on(UrlManager::class, UrlManager::EVENT_REGISTER_CP_URL_RULES, function(RegisterUrlRulesEvent $event) {
