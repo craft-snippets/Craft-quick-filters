@@ -184,8 +184,6 @@ class ElementFilter extends Model
                 $elements = \craft\elements\Entry::find()->anyStatus()->level([1, null])->all();
             }
 
-//            var_dump($elements);
-
             $options = $mapArrayRecursively($elements, function ($single) {
                 return [
                     'value' => $single->id,
