@@ -79,6 +79,8 @@ class ElementFilters extends Plugin
 
         Craft::$app->onInit(function() {
             $this->filters->injectFilterHtml();
+            // need to inject js everywhere instead of only when element imdex template is rendered - in that case it would return js with ajax request and it would not be able to grab Craft.elementIndex properly, when opening elemnt index with field modal (like entry field)
+            $this->filters->injectAssets();
         });
 
         // routes

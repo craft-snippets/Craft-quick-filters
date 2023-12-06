@@ -414,15 +414,6 @@ public function injectFilterHtml()
                 return;
             }
 
-            // inject asset bundle
-            $currentUser = Craft::$app->getUser()->getIdentity();
-            $hasPermission = $currentUser->can('accessPlugin-quick-filters');
-            Craft::$app->view->registerJs(
-                'var userCanManageFilters = ' . json_encode($hasPermission) . ';',
-                Craft::$app->view::POS_BEGIN
-            );
-            Craft::$app->view->registerAssetBundle(\craftsnippets\elementfilters\assetbundles\ElementFiltersAsset::class);
-
             $elementType = Craft::$app->getRequest()->getBodyParam('elementType');
             $sourceKey = Craft::$app->getRequest()->getBodyParam('source');
 
@@ -470,6 +461,25 @@ public function injectFilterHtml()
         }
     );   
 
+}
+
+public function injectAssets()
+{
+    if (!Craft::$app->getRequest()->getIsCpRequest()) {
+        return false;
+    }
+    $currentUser = Craft::$app->getUser()->getIdentity();
+    if(is_null($currentUser) || !$currentUser->can('accessCp')){
+        return false;
+    }
+
+    $hasPermission = $currentUser->can('accessPlugin-quick-filters');
+    Craft::$app->view->registerJs(
+        'var userCanManageFilters = ' . json_encode($hasPermission) . ';',
+        Craft::$app->view::POS_BEGIN
+    );
+
+    Craft::$app->view->registerAssetBundle(\craftsnippets\elementfilters\assetbundles\ElementFiltersAsset::class);
 }
 
 

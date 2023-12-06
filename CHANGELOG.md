@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.2 - 2023-12-07
+### Fixed
+- Fixed the JS errors
+
 ## 2.3.1 - 2023-12-06
 ### Fixed
 - Fixed the bug with empty entry dropdown filters
