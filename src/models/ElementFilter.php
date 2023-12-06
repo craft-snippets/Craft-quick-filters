@@ -163,12 +163,11 @@ class ElementFilter extends Model
                         if($section != null){
                             $handles[] = $section['handle'];       
                         }
-                                         
                     }
                 }
                 $elements = [];
                 if(!empty($handles)){
-                    $elements = \craft\elements\Entry::find()->section($handles)->anyStatus()->level(1)->all();
+                    $elements = \craft\elements\Entry::find()->section($handles)->anyStatus()->level([1, null])->all();
                 }
 
                 // singles
@@ -176,14 +175,16 @@ class ElementFilter extends Model
                     if($source == 'singles'){
                         $singlesSections = Craft::$app->getSections()->getSectionsByType('single');
                         $singleHandles = array_column($singlesSections, 'handle');
-                        $singles = \craft\elements\Entry::find()->section($singleHandles)->anyStatus()->level(1)->all();
+                        $singles = \craft\elements\Entry::find()->section($singleHandles)->anyStatus()->all();
                         $elements = array_merge($elements, $singles);
                     }
                 }                
 
             }else if($craftField->sources == '*'){
-                $elements = \craft\elements\Entry::find()->anyStatus()->level(1)->all();
+                $elements = \craft\elements\Entry::find()->anyStatus()->level([1, null])->all();
             }
+
+//            var_dump($elements);
 
             $options = $mapArrayRecursively($elements, function ($single) {
                 return [
