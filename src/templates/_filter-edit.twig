@@ -114,11 +114,12 @@ $('#filterType').on('change', function(){
 
 function toggleSorting()
 {
-    let selectFieldIds = {{ filterObject.getFieldsIdsUsingSelect|json_encode|raw }};
+    let selectFieldIds = {{ filterObject.getFieldsIdsUsingSelect|json_encode|raw }}.map(str => parseInt(str));
+
     let selectAttributes = [];
 
     let filterType = $('[data-element-filters-type] select').val();
-    let fieldId = $('[data-element-filters-select-field] select').val();
+    let fieldId = parseInt($('[data-element-filters-select-field] select').val());
     let attribute = $('[data-element-filters-select-attribute] select').val();
     if(
         (filterType == 'field' && selectFieldIds.includes(fieldId)) ||
