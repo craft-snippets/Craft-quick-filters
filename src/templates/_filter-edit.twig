@@ -74,7 +74,7 @@
     {% endif %}
 
     {{hiddenInput('elementType', elementType)}}
-    {{hiddenInput('sourceKey', sourceKey)}}    
+    {{hiddenInput('sourceKey', sourceKey)}}
 
 
 
@@ -118,7 +118,7 @@ function toggleSorting()
     let selectAttributes = [];
 
     let filterType = $('[data-element-filters-type] select').val();
-    let fieldId = parseInt($('[data-element-filters-select-field] select').val());
+    let fieldId = $('[data-element-filters-select-field] select').val();
     let attribute = $('[data-element-filters-select-attribute] select').val();
     if(
         (filterType == 'field' && selectFieldIds.includes(fieldId)) ||

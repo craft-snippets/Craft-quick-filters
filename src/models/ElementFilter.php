@@ -155,20 +155,44 @@ class ElementFilter extends Model
         // entry
         if(get_class($craftField) == 'craft\fields\Entries'){
             if(is_array($craftField->sources)){
-                $handles = [];
+                $handlesChannel = [];
+                $handlesStructure = [];
                 foreach ($craftField->sources as $source) {
                     if($source != 'singles'){
                         $uid = str_replace('section:', '', $source);
                         $section = Craft::$app->getSections()->getSectionByUid($uid);
                         if($section != null){
-                            $handles[] = $section['handle'];       
+                            if($section->type == 'channel'){
+                                $handlesChannel[] = $section['handle'];
+                            }
+                            if($section->type == 'structure'){
+                                $handlesStructure[] = $section['handle'];
+                            }
                         }
                     }
                 }
                 $elements = [];
-                if(!empty($handles)){
-                    $elements = \craft\elements\Entry::find()->section($handles)->anyStatus()->level([1, null])->all();
+                // level([1, null])-> doesnt work when we query channel and structure for some reason
+                $idsToQuery = [];
+                if(!empty($handlesStructure)){
+                    $ids = \craft\elements\Entry::find()->
+                    section($handlesStructure)->
+                    status(null)->
+                    level(1)->
+                    ids();
+                    $idsToQuery = array_merge($ids, $idsToQuery);
                 }
+                if(!empty($handlesChannel)){
+                    $ids = \craft\elements\Entry::find()->
+                    section($handlesChannel)->
+                    status(null)->
+                    ids();
+                    $idsToQuery = array_merge($ids, $idsToQuery);
+                }
+                $elements = \craft\elements\Entry::find()->
+                id($idsToQuery)->
+                status(null)->
+                all();
 
                 // singles
                 foreach ($craftField->sources as $source) {
@@ -178,7 +202,7 @@ class ElementFilter extends Model
                         $singles = \craft\elements\Entry::find()->section($singleHandles)->anyStatus()->all();
                         $elements = array_merge($elements, $singles);
                     }
-                }                
+                }
 
             }else if($craftField->sources == '*'){
                 $elements = \craft\elements\Entry::find()->anyStatus()->level([1, null])->all();

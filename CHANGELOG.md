@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.3 - 2024-02-08
+### Fixed
+- Fixed the error with dropdown filter having no options if it used entry field with channel section enabled for selection
+- Fixed the error with options sorting setting not showing in the filter settings
+
 ## 2.3.2 - 2023-12-07
 ### Fixed
 - Fixed the JS errors
