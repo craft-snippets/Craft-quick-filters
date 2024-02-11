@@ -118,6 +118,9 @@
     margin-right: 1px;
     position: relative;    
 }
+.element-filters__date-input-container-full{
+    width: 100%;
+}
 
 .element-filters__date-icon{
     position: absolute;

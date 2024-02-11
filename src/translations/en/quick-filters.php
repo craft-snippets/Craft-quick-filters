@@ -54,4 +54,8 @@ return [
     'Order options by' => 'Order options by',
     'Default order' => 'Default order',
     'Alphabetically' => 'Alphabetically',
+    'Datepicker mode' => 'Datepicker mode',
+    'Date range (two date pickers)' => 'Date range (two date pickers)',
+    'Day selection (one date picker)' => 'Day selection (one date picker)',
+    'Select day' => 'Select day',
 ];

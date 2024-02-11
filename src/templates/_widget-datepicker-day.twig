@@ -1,0 +1,31 @@
+{% set reQuestValue = craft.app.request.getBodyParam('criteria')[handle] ?? [] %}
+{% set dayValue = null %}
+{% if
+    reQuestValue is iterable and
+    reQuestValue|length == 3
+%}
+    {% set start = reQuestValue[1]|split(' ')[1] ?? null %}
+    {% set end = reQuestValue[2]|split(' ')[1] ?? null %}
+    {% if start is not null and end is not null and start == end %}
+        {% set dayValue = start %}
+    {% endif %}
+{% endif %}
+<div
+        class="element-filters__date"
+        data-elements-filters-date
+        data-element-filters-handle="{{handle}}"
+        data-element-filters-date-format="{{dateFormat}}"
+>
+    <div class="element-filters__date-input-container element-filters__date-input-container-full">
+        <input
+                type="text"
+                class="element-filters__date-input"
+                data-elements-filters-date-input
+                data-elements-filters-date-day
+                placeholder="{{'Select day'|t('app')}}"
+                value=""
+                data-initial-value="{{dayValue}}"
+        >
+        <div class="element-filters__date-icon" data-icon="date"></div>
+    </div>
+</div>

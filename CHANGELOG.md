@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 2.3.6 - 2024-02-10
+
+### Added
+- Added an option to use single datepicker (defining specific date) in date filters, instead two datepickers (defining date range)
+
+### Fixed
+- Fixed the bug with date filters not selecting date which was the same as end date of range, if this date had hour later than 00:00
+
 ## 2.3.3 - 2024-02-08
 ### Fixed
 - Fixed the error with dropdown filter having no options if it used entry field with channel section enabled for selection

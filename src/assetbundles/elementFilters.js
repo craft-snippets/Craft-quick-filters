@@ -1,5 +1,4 @@
 (function(){
-
 // if (typeof elementIndexObject != 'undefined') {
 
 // on page load
@@ -214,6 +213,7 @@ elementIndexObject = null;
     var min = null;
     var max = null;
 
+    // two dates
     if($(this).is('[data-elements-filters-date-min]')){
       min = $(this).val();
       var maxInput = $(this).closest('[data-elements-filters-date]').find('[data-elements-filters-date-max]');
@@ -229,6 +229,12 @@ elementIndexObject = null;
         min = minInput.val();
       }
     }
+
+    // single day
+      if($(this).is('[data-elements-filters-date-day]')){
+          min = $(this).val();
+      }
+
     var handle = $(this).closest('[data-elements-filters-date]').attr('data-element-filters-handle');
 
     if(min == ''){
@@ -241,12 +247,26 @@ elementIndexObject = null;
     // format
     var format = $(this).closest('[data-elements-filters-date]').attr('data-element-filters-date-format');
 
-    if(min){
-      min = moment(min, format).format("YYYY-MM-DD");
-    }
-    if(max){
-      max = moment(max, format).format("YYYY-MM-DD");
-    }
+    // single datepicker
+      if($(this).is('[data-elements-filters-date-day]')){
+            if(min){
+                minString = min
+                min = moment(min, format).startOf('day').format("YYYY-MM-DD HH:mm");
+                max = moment(minString, format).endOf('day').format("YYYY-MM-DD HH:mm");
+            }
+    // two datepickers
+      }else{
+          if(min){
+              min = moment(min, format).startOf('day').format("YYYY-MM-DD HH:mm");
+          }
+          if(max){
+              max = moment(max, format).endOf('day').format("YYYY-MM-DD HH:mm");
+          }
+      }
+
+
+
+    //
 
     if(min != null && max == null){
       event.params.criteria[handle] = ['and', '>= ' + min];

@@ -26,22 +26,27 @@ class ElementFilter extends Model
     public $elementAttribute;
     public $filterType;
     public $orderOptionsBy;
+    public $datePickerType;
 
     const JSON_PROPERTIES = [
         'fieldId',
         'elementAttribute',
         'filterType',
-        'orderOptionsBy'
+        'orderOptionsBy',
+        'datePickerType',
     ];
 
     const SORT_DEFAULT = 'default';
     const SORT_ALPHABETICALLY = 'alphabetically';
+    const DATEPICKER_DAY = 'day';
+    const DATEPICKER_RANGE = 'range';
 
     const FILTER_TYPE_FIELD = 'field';
     const FILTER_TYPE_ATTRIBUTE = 'attribute';
 
     const WIDGET_SELECT_TEMPLATE = 'quick-filters/_widget-select';
     const WIDGET_DATE_TEMPLATE = 'quick-filters/_widget-datepicker';
+    const WIDGET_DATE_TEMPLATE_DAY = 'quick-filters/_widget-datepicker-day';
     const WIDGET_RANGE_TEMPLATE = 'quick-filters/_widget-range';
     const WIDGET_TEXT_TEMPLATE = 'quick-filters/_widget-text';
 
@@ -128,6 +133,20 @@ class ElementFilter extends Model
             [
                 'value' => self::SORT_ALPHABETICALLY,
                 'label' => Craft::t('quick-filters', 'Alphabetically'),
+            ],
+        ];
+    }
+
+    public function getDatepickerOptions()
+    {
+        return [
+            [
+                'value' => self::DATEPICKER_RANGE,
+                'label' => Craft::t('quick-filters', 'Date range (two date pickers)'),
+            ],
+            [
+                'value' => self::DATEPICKER_DAY,
+                'label' => Craft::t('quick-filters', 'Day selection (one date picker)'),
             ],
         ];
     }
@@ -547,6 +566,20 @@ class ElementFilter extends Model
         return $ids;
     }
 
+    public function getFieldIdsUsingDatepicker()
+    {
+        $craftFields = Craft::$app->getFields()->allFields;
+        $craftFields = array_filter($craftFields, function($single){
+            if(
+                in_array(get_class($single), self::FIELDS_DATE)
+            ){
+                return true;
+            }
+        });
+        $ids = array_column($craftFields, 'id');
+        return $ids;
+    }
+
     public function render()
     {
 
@@ -620,8 +653,12 @@ class ElementFilter extends Model
                 'handle' => $this->getFilterHandle(),
                 'dateFormat' => $dateFormat,
                 'label' => $this->getName(),
-            ];            
-            $template = self::WIDGET_DATE_TEMPLATE;
+            ];
+            if($this->datePickerType == self::DATEPICKER_DAY){
+                $template = self::WIDGET_DATE_TEMPLATE_DAY;
+            }else{
+                $template = self::WIDGET_DATE_TEMPLATE;
+            }
         }
 
         // range 

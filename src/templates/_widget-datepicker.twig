@@ -1,11 +1,11 @@
 {% set reQuestValue = craft.app.request.getBodyParam('criteria')[handle] ?? [] %}
-
 {% set start = null %}
 {% set end = null %}
 
 {% for item in reQuestValue %}
+
     {% set parts = item|split(' ') %}
-    {% if parts|length == 2 %}
+    {% if parts|length == 3 %}
         {% if parts[0] == '>=' %}
             {% set start = parts[1] %}
         {% endif %}
@@ -14,7 +14,6 @@
         {% endif %}            
     {% endif %}
 {% endfor %}
-
 {# newly created users do not have weekstartday defined #}
 {# {% set weekStartDay = currentUser.getPreferences().weekStartDay ?? 1 %} #}
 

@@ -66,6 +66,20 @@
     }) }}
     </div>
 
+    <div data-element-filters-datepicker-type hidden class="field">
+        {# order by #}
+        {{ forms.selectField({
+            label: 'Datepicker mode'|t('quick-filters'),
+            id: 'datePickerType',
+            name: 'datePickerType',
+            options: filterObject.getDatepickerOptions(),
+            value: filterObject.datePickerType,
+            errors: filterObject.getErrors('datePickerType'),
+        }) }}
+    </div>
+
+
+
     {# params #}
     {{actionInput('quick-filters/element-filters/filter-save')}}
     {{redirectInput('quick-filters/' ~ elementType ~ '/' ~ sourceKey)}}
@@ -94,6 +108,7 @@
     }
 {% endcss %}
 
+<script>
 {% js %}
 // $('select#fieldId').prepend('<option data-placeholder="true"></option>');
 new SlimSelect({
@@ -112,11 +127,13 @@ $('#filterType').on('change', function(){
     }
 });
 
-function toggleSorting()
+function toggleInputs()
 {
-    let selectFieldIds = {{ filterObject.getFieldsIdsUsingSelect|json_encode|raw }}.map(str => parseInt(str));
+    let selectFieldIds = {{ filterObject.getFieldsIdsUsingSelect()|json_encode|raw }}.map(str => parseInt(str));
+    let dateFields = {{ filterObject.getFieldIdsUsingDatepicker()|json_encode|raw }}.map(str => parseInt(str));
 
     let selectAttributes = [];
+    let dateAttributes = ['postDate', 'expiryDate', 'dateCreated', 'dateUpdated', 'lastLoginDate', 'dateOrdered', 'datePaid'];
 
     let filterType = $('[data-element-filters-type] select').val();
     let fieldId = parseInt($('[data-element-filters-select-field] select').val());
@@ -129,15 +146,26 @@ function toggleSorting()
     }else{
         $('[data-element-filters-sort-order]').hide();
     }
+
+    if(
+        (filterType == 'field' && dateFields.includes(fieldId)) ||
+        (filterType == 'attribute' && dateAttributes.includes(attribute))
+    ){
+        $('[data-element-filters-datepicker-type]').show();
+    }else{
+        $('[data-element-filters-datepicker-type]').hide();
+    }
+
 }
 
 $('[data-element-filters-type] select, [data-element-filters-select-field] select, [data-element-filters-select-attribute] select').on('change', function(){
-    toggleSorting();
+    toggleInputs();
 });
 
 $(document).ready(function(){
-    toggleSorting();
+    toggleInputs();
 })
 
 {% endjs %}
+</script>
 {% endblock %}
