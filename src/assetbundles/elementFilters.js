@@ -102,21 +102,78 @@ function initSelect(element){
 
         var placeholder = element.attr('data-element-filters-select-placeholder');
         var searchPlaceholder = element.attr('data-element-filters-search-select-placeholder');
+        var mode = element.attr('data-element-filters-dropdown-mode');
+        var controllerUrl = element.attr('data-element-filters-dropdown-endpoint');
+        var filterId = element.attr('data-element-filters-filter-id');
 
-        // dont add search to switch
+        // don't add search to switch
         if(element.attr('data-element-filters-type') == 'switch' ){
           var showSearch = false;
         }else{
           var showSearch = true;
         }
 
+        if(mode == 'ajax'){
 
-        new SlimSelect({
-          select: element[0],
-          placeholder: placeholder,
-          searchPlaceholder: searchPlaceholder,
-          showSearch: showSearch,
-        });
+            new SlimSelect({
+                select: element[0],
+                placeholder: placeholder,
+                searchPlaceholder: searchPlaceholder,
+                showSearch: showSearch,
+
+
+                events: {
+
+                    afterChange: (newVal) => {
+                        elementIndexObject.updateElements();
+                    },
+
+                    search: (search, currentData) => {
+                        return new Promise((resolve, reject) => {
+                            fetch(controllerUrl + '&filterId='+filterId+'&q=' + search, {
+                                method: 'GET',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                            })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    // excluding any that are already selected in currentData
+                                    const options = data
+                                        .filter((single) => {
+                                            return !currentData.some((optionData) => {
+                                                return optionData.value === `${single.value}`
+                                            })
+                                        })
+                                        .map((single) => {
+                                            return {
+                                                text: `${single.text}`,
+                                                value: `${single.value}`,
+                                            }
+                                        })
+
+                                    resolve(options)
+                                })
+                        })
+                    }
+                }
+
+            });
+
+        }else{
+            new SlimSelect({
+                select: element[0],
+                placeholder: placeholder,
+                searchPlaceholder: searchPlaceholder,
+                showSearch: showSearch,
+                events: {
+                    afterChange: (newVal) => {
+                        elementIndexObject.updateElements();
+                    }
+                }
+            });
+        }
+
 
 }
 
@@ -165,6 +222,7 @@ $('body').on('change', '[data-element-filters-select]', function(){
   elementIndexObject.updateElements();
 });
 
+// unused for new version of slimselect anymore
 $('body').on('change', '[data-elements-filters-range-input], [data-elements-filters-date-input]', function(){
   elementIndexObject.updateElements();
 });

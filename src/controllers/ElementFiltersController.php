@@ -225,5 +225,33 @@ public function actionFilterReorder()
     ]);
 }
 
+public function actionGetDropdownOptions()
+{
+    $this->requirePermission('accessCp');
+
+    $request = Craft::$app->getRequest();
+    $filterId = $request->getQueryParam('filterId');
+
+    if($filterId){
+        $filterObject = ElementFilters::getInstance()->filters->getFilterById($filterId);
+        if(!$filterObject){
+            throw new NotFoundHttpException(Craft::t('quick-filters','Filter not found'));
+        }
+    }else{
+        throw new ServerErrorHttpException(Craft::t('quick-filters','FilterId param not found'));
+    }
+
+    $searchBy = $request->getQueryParam('q');
+
+    $query = $filterObject->getOptionsQueryObject();
+    $optionsEntries = $query->limit(10)->search('title:' . $searchBy)->all();
+    $options = array_map(function($single){
+        return [
+            'text' => $single->title,
+            'value' => $single->id,
+        ];
+    }, $optionsEntries);
+    return $this->asJson($options);
+}
 
 }

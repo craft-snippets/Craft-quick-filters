@@ -54,8 +54,8 @@
     }) }}
     </div>
 
-    <div data-element-filters-sort-order hidden class="field">
     {# order by #}
+    <div data-element-filters-sort-order hidden class="field">
     {{ forms.selectField({
         label: 'Order options by'|t('quick-filters'),
         id: 'orderOptionsBy',
@@ -66,19 +66,30 @@
     }) }}
     </div>
 
+    {# Datepicker mode #}
     <div data-element-filters-datepicker-type hidden class="field">
-        {# order by #}
-        {{ forms.selectField({
-            label: 'Datepicker mode'|t('quick-filters'),
-            id: 'datePickerType',
-            name: 'datePickerType',
-            options: filterObject.getDatepickerOptions(),
-            value: filterObject.datePickerType,
-            errors: filterObject.getErrors('datePickerType'),
-        }) }}
+    {{ forms.selectField({
+        label: 'Datepicker mode'|t('quick-filters'),
+        id: 'datePickerType',
+        name: 'datePickerType',
+        options: filterObject.getDatepickerOptions(),
+        value: filterObject.datePickerType,
+        errors: filterObject.getErrors('datePickerType'),
+    }) }}
     </div>
 
-
+    {# Dropdown mode #}
+    <div data-element-filters-dropdown-type hidden class="field">
+        {{ forms.selectField({
+            label: 'Dropdown mode'|t('quick-filters'),
+            instructions: 'In case your relation field has a lot of selectable elements, it is recommended to use ajax mode to avoid lagging when displaying elements list. Available only for entry fields.'|t('quick-filters'),
+            id: 'dropdownMode',
+            name: 'dropdownMode',
+            options: filterObject.getDropdownModeOptions(),
+            value: filterObject.dropdownMode,
+            errors: filterObject.getErrors('dropdownMode'),
+        }) }}
+    </div>
 
     {# params #}
     {{actionInput('quick-filters/element-filters/filter-save')}}
@@ -131,6 +142,7 @@ function toggleInputs()
 {
     let selectFieldIds = {{ filterObject.getFieldsIdsUsingSelect()|json_encode|raw }}.map(str => parseInt(str));
     let dateFields = {{ filterObject.getFieldIdsUsingDatepicker()|json_encode|raw }}.map(str => parseInt(str));
+    let dropdownModeFields = {{ filterObject.getFieldIdsUsingDropdownMode()|json_encode|raw }}.map(str => parseInt(str));
 
     let selectAttributes = [];
     let dateAttributes = ['postDate', 'expiryDate', 'dateCreated', 'dateUpdated', 'lastLoginDate', 'dateOrdered', 'datePaid'];
@@ -138,6 +150,8 @@ function toggleInputs()
     let filterType = $('[data-element-filters-type] select').val();
     let fieldId = parseInt($('[data-element-filters-select-field] select').val());
     let attribute = $('[data-element-filters-select-attribute] select').val();
+
+    // sort order
     if(
         (filterType == 'field' && selectFieldIds.includes(fieldId)) ||
         (filterType == 'attribute' && selectAttributes.includes(attribute))
@@ -147,6 +161,7 @@ function toggleInputs()
         $('[data-element-filters-sort-order]').hide();
     }
 
+    // datepicker type
     if(
         (filterType == 'field' && dateFields.includes(fieldId)) ||
         (filterType == 'attribute' && dateAttributes.includes(attribute))
@@ -155,6 +170,16 @@ function toggleInputs()
     }else{
         $('[data-element-filters-datepicker-type]').hide();
     }
+
+    // dropdown mode
+    if(
+        (filterType == 'field' && dropdownModeFields.includes(fieldId))
+    ){
+        $('[data-element-filters-dropdown-type]').show();
+    }else{
+        $('[data-element-filters-dropdown-type]').hide();
+    }
+
 
 }
 

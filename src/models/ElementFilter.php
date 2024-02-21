@@ -12,6 +12,8 @@ use craftsnippets\elementfilters\ElementFilters;
 
 class ElementFilter extends Model
 {
+    const DROPDOWN_MODE_DEFAULT = 'default';
+    const DROPDOWN_MODE_AJAX = 'ajax';
 
     public $id;
     public $uid;
@@ -27,6 +29,7 @@ class ElementFilter extends Model
     public $filterType;
     public $orderOptionsBy;
     public $datePickerType;
+    public $dropdownMode = self::DROPDOWN_MODE_DEFAULT;
 
     const JSON_PROPERTIES = [
         'fieldId',
@@ -34,6 +37,7 @@ class ElementFilter extends Model
         'filterType',
         'orderOptionsBy',
         'datePickerType',
+        'dropdownMode',
     ];
 
     const SORT_DEFAULT = 'default';
@@ -149,6 +153,105 @@ class ElementFilter extends Model
                 'label' => Craft::t('quick-filters', 'Day selection (one date picker)'),
             ],
         ];
+    }
+    
+    public function getDropdownModeOptions()
+    {
+        return [
+            [
+                'value' => self::DROPDOWN_MODE_DEFAULT,
+                'label' => Craft::t('quick-filters', 'Display all options'),
+            ],
+            [
+                'value' => self::DROPDOWN_MODE_AJAX,
+                'label' => Craft::t('quick-filters', 'Ajax mode'),
+            ],
+        ];
+    }
+
+    public function getFieldIdsUsingDropdownMode()
+    {
+        $craftFields = Craft::$app->getFields()->allFields;
+        $craftFields = array_filter($craftFields, function($single){
+//            if(
+//                in_array(get_class($single), self::FIELDS_RELATIONS)
+//            ){
+//                return true;
+//            }
+            // only entry fields
+            if(get_class($single) == 'craft\fields\Entries'){
+                return true;
+            }
+        });
+        $ids = array_column($craftFields, 'id');
+        return $ids;
+    }
+
+    public function getOptionsQueryObject()
+    {
+        $craftField = null;
+        if($this->filterType == self::FILTER_TYPE_FIELD && $this->fieldId != null){
+            $craftField = Craft::$app->fields->getFieldById($this->fieldId);
+        }else{
+            return null;
+        }
+
+        // entry
+        if(get_class($craftField) == 'craft\fields\Entries'){
+            if(is_array($craftField->sources)){
+                $handles = [];
+                foreach ($craftField->sources as $source) {
+                    if($source != 'singles'){
+                        $uid = str_replace('section:', '', $source);
+                        $section = Craft::$app->getSections()->getSectionByUid($uid);
+                        if($section != null){
+                            $handles[] = $section['handle'];
+                        }
+                    }
+                }
+
+                // singles
+                foreach ($craftField->sources as $source) {
+                    if($source == 'singles'){
+                        $singlesSections = Craft::$app->getSections()->getSectionsByType('single');
+                        $singleHandles = array_column($singlesSections, 'handle');
+                        $handles = array_merge($singleHandles, $handles);
+                    }
+                }
+
+                $query = \craft\elements\Entry::find()->
+                section($handles)->
+                status(null);
+
+            }else if($craftField->sources == '*'){
+                $query = \craft\elements\Entry::find()->status(null);
+            }
+
+            return $query;
+        }
+        return null;
+    }
+
+    public function getAjaxModeRelationOptions()
+    {
+        $query = $this->getOptionsQueryObject();
+        $request = Craft::$app->getRequest();
+        $searchBy = $request->getQueryParam('q');
+
+        $selectedIds = $request->getBodyParam('criteria')[$this->getFilterHandle()] ?? null;
+
+        if(is_null($selectedIds)){
+            return [];
+        }
+        $optionsEntries = $query->limit(10)->id($selectedIds)->all();
+        $options = array_map(function($single){
+            return [
+                'label' => $single->title,
+                'value' => $single->id,
+                'level' => 1,
+            ];
+        }, $optionsEntries);
+        return $options;
     }
 
     private function getRelationFieldOptions($craftField)
@@ -599,13 +702,16 @@ class ElementFilter extends Model
                 in_array(get_class($field), self::FIELDS_COLOR)
             )
         ){
+            $options = $this->dropdownMode == self::DROPDOWN_MODE_AJAX ? $this->getAjaxModeRelationOptions() : $this->getOptions($field);
             $context = [
                 'type' => $this->getSelectType($field),
-                'options' => $this->getOptions($field),
+                'options' => $options,
                 'placeholder' => $this->getName(),
                 'handle' => $this->getFilterHandle(),
                 // switch does nto allow multiple options selection
                 'multiple' => !in_array(get_class($field), self::FIELDS_SWITCH),
+                'mode' => $this->dropdownMode,
+                'filterId' => $this->id,
             ];
             $template = self::WIDGET_SELECT_TEMPLATE;
         }
@@ -621,6 +727,8 @@ class ElementFilter extends Model
                 'placeholder' => $this->getName(),
                 'handle' => $this->getFilterHandle(),
                 'multiple' => true,
+                'mode' => $this->dropdownMode,
+                'filterId' => $this->id,
             ];
             $template = self::WIDGET_SELECT_TEMPLATE;
         }

@@ -58,4 +58,8 @@ return [
     'Date range (two date pickers)' => 'Date range (two date pickers)',
     'Day selection (one date picker)' => 'Day selection (one date picker)',
     'Select day' => 'Select day',
+    'Dropdown mode' => 'Dropdown mode',
+    'Display all options' => 'Display all options',
+    'Ajax mode' => 'Ajax mode',
+    'In case your relation field has a lot of selectable elements, it is recommended to use ajax mode to avoid lagging when displaying elements list. Available only for entry fields.' => 'In case your relation field has a lot of selectable elements, it is recommended to use ajax mode to avoid lagging when displaying elements list. Available only for entry fields.',
 ];

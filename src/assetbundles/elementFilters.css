@@ -183,6 +183,9 @@
     border-radius: 50%;
     border: 1px solid transparent;
     margin-right: 2px;
+    position: relative;
+    right: 3px;
+    top: 6px;
 }
 
 .element-filters__option-type-relation.element-filters__option-is-disabled:before{
@@ -193,7 +196,10 @@
     display: inline-block;
     border-radius: 50%;
     border: 1px solid #596673;
-    margin-right: 2px;    
+    margin-right: 2px;
+    position: relative;
+    right: 3px;
+    top: 6px;
 }
 
 .ss-content .ss-list .ss-option.ss-disabled{
