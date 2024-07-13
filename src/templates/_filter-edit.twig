@@ -32,11 +32,11 @@
     <div data-element-filters-select-field {{filterObject.filterType == 'attribute' ? 'hidden'}}>
     {{ forms.selectField({
         label: 'Craft Field'|t('quick-filters'),
-        id: 'fieldId',
-        name: 'fieldId',
+        id: 'fieldUidInLayout',
+        name: 'fieldUidInLayout',
         options: craftFields,
-        value: filterObject.fieldId,
-        errors: filterObject.getErrors('fieldId'),
+        value: filterObject.fieldUidInLayout,
+        errors: filterObject.getErrors('fieldUidInLayout'),
         instructions: 'You can create filters from date fields, relation type fields, fields with multiple options, number fields, text fields and lightswitch fields.'|t('quick-filters'),
         required: true,
     }) }}
@@ -101,8 +101,6 @@
     {{hiddenInput('elementType', elementType)}}
     {{hiddenInput('sourceKey', sourceKey)}}
 
-
-
 {% css %}
     #fieldId-field{
         margin-top: 0px;
@@ -140,15 +138,15 @@ $('#filterType').on('change', function(){
 
 function toggleInputs()
 {
-    let selectFieldIds = {{ filterObject.getFieldsIdsUsingSelect()|json_encode|raw }}.map(str => parseInt(str));
-    let dateFields = {{ filterObject.getFieldIdsUsingDatepicker()|json_encode|raw }}.map(str => parseInt(str));
-    let dropdownModeFields = {{ filterObject.getFieldIdsUsingDropdownMode()|json_encode|raw }}.map(str => parseInt(str));
+    let selectFieldIds = {{ filterObject.getFieldsIdsUsingSelect()|json_encode|raw }};
+    let dateFields = {{ filterObject.getFieldIdsUsingDatepicker()|json_encode|raw }};
+    let dropdownModeFields = {{ filterObject.getFieldIdsUsingDropdownMode()|json_encode|raw }};
 
     let selectAttributes = [];
     let dateAttributes = ['postDate', 'expiryDate', 'dateCreated', 'dateUpdated', 'lastLoginDate', 'dateOrdered', 'datePaid'];
 
     let filterType = $('[data-element-filters-type] select').val();
-    let fieldId = parseInt($('[data-element-filters-select-field] select').val());
+    let fieldId = $('[data-element-filters-select-field] select').val();
     let attribute = $('[data-element-filters-select-attribute] select').val();
 
     // sort order
@@ -179,7 +177,6 @@ function toggleInputs()
     }else{
         $('[data-element-filters-dropdown-type]').hide();
     }
-
 
 }
 

@@ -3,6 +3,7 @@
 namespace craftsnippets\elementfilters\models;
 
 use Craft;
+use craft\base\FieldInterface;
 use craft\base\Model;
 use craft\helpers\UrlHelper;
 use craft\helpers\Template;
@@ -24,7 +25,7 @@ class ElementFilter extends Model
     public $jsonSettings;
 
     // json properties
-    public $fieldId;
+    public $fieldUidInLayout;
     public $elementAttribute;
     public $filterType;
     public $orderOptionsBy;
@@ -32,7 +33,7 @@ class ElementFilter extends Model
     public $dropdownMode = self::DROPDOWN_MODE_DEFAULT;
 
     const JSON_PROPERTIES = [
-        'fieldId',
+        'fieldUidInLayout',
         'elementAttribute',
         'filterType',
         'orderOptionsBy',
@@ -171,7 +172,7 @@ class ElementFilter extends Model
 
     public function getFieldIdsUsingDropdownMode()
     {
-        $craftFields = Craft::$app->getFields()->allFields;
+        $craftFields = $this->getAllLayoutFields();
         $craftFields = array_filter($craftFields, function($single){
 //            if(
 //                in_array(get_class($single), self::FIELDS_RELATIONS)
@@ -183,15 +184,25 @@ class ElementFilter extends Model
                 return true;
             }
         });
-        $ids = array_column($craftFields, 'id');
-        return $ids;
+//        $ids = array_column($craftFields, 'id');
+//        return $ids;
+        $uids = [];
+        foreach ($craftFields as $field){
+            if(isset($field->layoutElement->uid)){
+                $uids[] = $field->layoutElement->uid;
+            }
+        }
+        return $uids;
     }
 
     public function getOptionsQueryObject()
     {
         $craftField = null;
-        if($this->filterType == self::FILTER_TYPE_FIELD && $this->fieldId != null){
-            $craftField = Craft::$app->fields->getFieldById($this->fieldId);
+        if($this->filterType == self::FILTER_TYPE_FIELD){
+            $craftField = $this->getFieldObject();
+            if(is_null($craftField)){
+                return null;
+            }
         }else{
             return null;
         }
@@ -655,7 +666,7 @@ class ElementFilter extends Model
 
     public function getFieldsIdsUsingSelect()
     {
-        $craftFields = Craft::$app->getFields()->allFields;
+        $craftFields = $this->getAvaibleFields();
         $craftFields = array_filter($craftFields, function($single){
             if(
                 in_array(get_class($single), self::FIELDS_RELATIONS) ||
@@ -665,13 +676,20 @@ class ElementFilter extends Model
                 return true;
             }
         });
-        $ids = array_column($craftFields, 'id');
-        return $ids;
+//        $ids = array_column($craftFields, 'id');
+//        return $ids;
+        $uids = [];
+        foreach ($craftFields as $field){
+            if(isset($field->layoutElement->uid)){
+                $uids[] = $field->layoutElement->uid;
+            }
+        }
+        return $uids;
     }
 
     public function getFieldIdsUsingDatepicker()
     {
-        $craftFields = Craft::$app->getFields()->allFields;
+        $craftFields = $this->getAvaibleFields();
         $craftFields = array_filter($craftFields, function($single){
             if(
                 in_array(get_class($single), self::FIELDS_DATE)
@@ -679,16 +697,26 @@ class ElementFilter extends Model
                 return true;
             }
         });
-        $ids = array_column($craftFields, 'id');
-        return $ids;
+//        $ids = array_column($craftFields, 'id');
+//        return $ids;
+        $uids = [];
+        foreach ($craftFields as $field){
+            if(isset($field->layoutElement->uid)){
+                $uids[] = $field->layoutElement->uid;
+            }
+        }
+        return $uids;
     }
 
     public function render()
     {
 
         $field = null;
-        if($this->filterType == self::FILTER_TYPE_FIELD && $this->fieldId != null){
-            $field = Craft::$app->fields->getFieldById($this->fieldId);
+        if($this->filterType == self::FILTER_TYPE_FIELD){
+            $field = $this->getFieldObject();
+            if(is_null($field)){
+                return null;
+            }
         }
 
         // select
@@ -822,11 +850,28 @@ class ElementFilter extends Model
         return $html;
     }
 
+    public function getAllLayoutFields()
+    {
+        $elementTypeString = null;
+        if($this->elementType == 'entries'){
+            $elementTypeString = 'craft\elements\Entry';
+        }
 
+        $craftFields = [];
+        foreach (Craft::$app->getFields()->getLayoutsByType($elementTypeString) as $fieldLayout) {
+            foreach ($fieldLayout->getCustomFields() as $field) {
+                if ($field instanceof FieldInterface) {
+                    $craftFields[] = $field;
+                }
+            }
+        }
+        return $craftFields;
+    }
 
     public function getAvaibleFields()
     {
-        $craftFields = Craft::$app->getFields()->allFields;
+//        $craftFields = Craft::$app->getFields()->allFields;
+        $craftFields = $this->getAllLayoutFields();
         $craftFields = array_filter($craftFields, function($single){
             if(
                 in_array(get_class($single), self::FIELDS_RELATIONS) || 
@@ -841,6 +886,32 @@ class ElementFilter extends Model
             }
         });
         return $craftFields;
+    }
+
+    public function getAvaibleFieldsOptions()
+    {
+        $fields = $this->getAvaibleFields();
+        return array_map(function($single){
+            return [
+                'label' => $single->name,
+                'value' => $single->layoutElement->uid,
+            ];
+        }, $fields);
+    }
+
+    public function getFieldObject()
+    {
+        $field = null;
+        if(is_null($this->fieldUidInLayout)){
+            return $field;
+        }
+        foreach ($this->getAllLayoutFields() as $singleField){
+            if(($singleField->layoutElement->uid ?? null) == $this->fieldUidInLayout){
+                $field = $singleField;
+                break;
+            }
+        }
+        return $field;
     }
 
     public function getFilterTypeOptions()
@@ -868,10 +939,12 @@ class ElementFilter extends Model
     public function getName()
     {
         $name = null;
-        if($this->filterType == self::FILTER_TYPE_FIELD && $this->fieldId != null){
-            $field = Craft::$app->fields->getFieldById($this->fieldId);
+        if($this->filterType == self::FILTER_TYPE_FIELD){
+            $field = $this->getFieldObject();
             if($field != null){
                 $name = $field->name;
+//                var_dump($field->layoutElement->uid);
+//                var_dump($this->fieldUidInLayout);
             }
         }else if($this->filterType == self::FILTER_TYPE_ATTRIBUTE){
             $attribute = $this->getAttributeData();
@@ -898,8 +971,11 @@ class ElementFilter extends Model
     public function getFilterHandle()
     {
         $handle = null;
-        if($this->filterType == self::FILTER_TYPE_FIELD && $this->fieldId != null){
-            $field = Craft::$app->fields->getFieldById($this->fieldId);
+        if($this->filterType == self::FILTER_TYPE_FIELD){
+            $field = $this->getFieldObject();
+            if(is_null($field)){
+                return null;
+            }
             $handle = $field->handle;
         }else if($this->filterType == self::FILTER_TYPE_ATTRIBUTE){
             $handle = $this->elementAttribute;
@@ -1177,7 +1253,7 @@ class ElementFilter extends Model
 
         if($this->filterType == self::FILTER_TYPE_FIELD){
             $same = array_filter($siblings, function($single){
-                return $single->filterType == self::FILTER_TYPE_FIELD && $single->fieldId == $this->fieldId && $single->id != $this->id;
+                return $single->filterType == self::FILTER_TYPE_FIELD && $single->fieldUidInLayout == $this->fieldUidInLayout && $single->id != $this->id;
             });
             if(!empty($same)){
                 return true;
@@ -1210,7 +1286,7 @@ class ElementFilter extends Model
         $rules[] = [['filterType', 'elementType', 'sourceKey', 'order'], 'required'];
         $rules[] = [['elementType', 'sourceKey'], 'string', 'max' => 255];
 
-        $rules[] = [['fieldId'], 'validateField', 'skipOnEmpty' => false];
+        $rules[] = [['fieldUidInLayout'], 'validateField', 'skipOnEmpty' => false];
         $rules[] = [['elementAttribute'], 'validateAttribute', 'skipOnEmpty' => false];
 
         return $rules;
@@ -1218,7 +1294,7 @@ class ElementFilter extends Model
 
     public function validateField($attributeName, $params)
     {
-        if($this->filterType == self::FILTER_TYPE_FIELD && $this->fieldId == null){
+        if($this->filterType == self::FILTER_TYPE_FIELD && $this->fieldUidInLayout == null){
             $this->addError($attributeName, Craft::t('quick-filters','You must select Craft field'));
             return false;
         }

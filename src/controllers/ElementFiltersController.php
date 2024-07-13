@@ -75,12 +75,7 @@ public function actionFilterEdit($elementType, $sourceKey, int $filterId = null,
     $elementAndGroupName = $groupData['elementName'] . ' - ' . $groupData['groupName'];
     
     // field
-    $craftFields = array_map(function($single){
-        return [
-            'value' => $single->id,
-            'label' => $single->name,
-        ];
-    }, $filterObject->avaibleFields);
+    $craftFields = $filterObject->getAvaibleFieldsOptions();
     $empty = [[
             'value' => null,
             'label' => Craft::t('quick-filters', 'Select field'),
