@@ -90,7 +90,7 @@ public function getElementGroupData($elementType, $sourceKey)
             }else{
                 $uid = explode(':', $sourceKey);
                 $uid = end($uid);
-                $section = Craft::$app->sections->getSectionByUid($uid);
+                $section = Craft::$app->getEntries()->getSectionByUid($uid);
                 if(!is_null($section)){
                     $groupName = $section->name;
                     $bredcrumbUrl = UrlHelper::cpUrl('entries/' . $section->handle);                    
@@ -322,14 +322,14 @@ public function removeFiltersOnEvents()
 
     // on section delete
     \yii\base\Event::on(
-        \craft\services\Sections::class,
-        \craft\services\Sections::EVENT_BEFORE_DELETE_SECTION,
+        \craft\services\Entries::class,
+        \craft\services\Entries::EVENT_BEFORE_DELETE_SECTION,
         function (\craft\events\SectionEvent $event) {
             $uid = 'section:' . $event->section->uid;
             $filters = ArrayHelper::whereIn($this->getAllFilters(), 'sourceKey', [$uid]);
             foreach ($filters as $filter) {
                 $this->deleteFilterById($filter->id);
-            }            
+            }
         }
     );
 
