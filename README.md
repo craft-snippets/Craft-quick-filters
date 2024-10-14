@@ -1,4 +1,4 @@
-# Quick filters plugin for Craft CMS 4.x
+# Quick filters plugin for Craft CMS 5.x
 
 Quick filters plugin allows you to easily create filter widgets for control panel element index lists for entries, categories, assets, users or commerce products and orders.
 

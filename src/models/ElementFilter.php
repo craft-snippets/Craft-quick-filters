@@ -26,6 +26,8 @@ class ElementFilter extends Model
 
     // json properties
     public $fieldUidInLayout;
+    public $fieldId;
+
     public $elementAttribute;
     public $filterType;
     public $orderOptionsBy;
@@ -39,6 +41,7 @@ class ElementFilter extends Model
         'orderOptionsBy',
         'datePickerType',
         'dropdownMode',
+        'fieldId',
     ];
 
     const SORT_DEFAULT = 'default';
@@ -102,6 +105,31 @@ class ElementFilter extends Model
     public function init(): void
     {
         $this->populateJsonSettings();
+
+        // for update form craft 4 to 5
+        if(is_null($this->fieldUidInLayout) && !is_null($this->fieldId)){
+            $newInLayout = $this->getFieldUidFromOldId();
+            if(!is_null($newInLayout)){
+                $this->fieldUidInLayout = $newInLayout->layoutElement->uid;
+            }
+        }
+    }
+
+    public function getFieldUidFromOldId()
+    {
+        $layoutFields = $this->getAllLayoutFields();
+        $oldField = Craft::$app->fields->getFieldById($this->fieldId);
+        if(is_null($oldField)){
+            return null;
+        }
+        $layoutFields = $this->getAllLayoutFields();
+        $matching = array_filter($layoutFields, function($single) use ($oldField){
+            return $single->handle == $oldField->handle;
+        });
+        if(empty($matching)){
+            return null;
+        }
+        return reset($matching);
     }
 
     public function populateJsonSettings()
