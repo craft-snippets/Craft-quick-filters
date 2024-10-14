@@ -2,6 +2,8 @@
 
 Quick filters plugin allows you to easily create filter widgets for control panel element index lists for entries, categories, assets, users or commerce products and orders.
 
+Please note that for Craft 5.x, it requires at least 5.3 Craft CMS version.
+
 # Features
 
 * Filters can be created using fields assigned to your content or attributes like entry post date. 
@@ -37,7 +39,7 @@ Since Craft CMS 4, users can filter element index lists. However, filtering func
 
 ## Requirements
 
-This plugin requires Craft CMS 3.0.0-beta.23 or later.
+This plugin requires Craft CMS 5.3 or later.
 
 ## Installation
 
@@ -55,4 +57,4 @@ To install the plugin, follow these instructions.
 
 Brought to you by [Piotr Pogorzelski](http://craftsnippets.com/)
 
-Plugin logo created by [wikimedia](https://commons.wikimedia.org/wiki/File:Eo_circle_blue_white_letter-f.svg)
+Plugin logo - [Free Filter Icon | Line Icon](https://iconscout.com/free-icon/filter-3524156) by [Abyhades Design](https://iconscout.com/contributors/abyhadesign)
