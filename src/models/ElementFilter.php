@@ -856,6 +856,21 @@ class ElementFilter extends Model
         if($this->elementType == 'entries'){
             $elementTypeString = 'craft\elements\Entry';
         }
+        if($this->elementType == 'categories'){
+            $elementTypeString = 'craft\elements\Category';
+        }
+        if($this->elementType == 'users'){
+            $elementTypeString = 'craft\elements\User';
+        }
+        if($this->elementType == 'assets'){
+            $elementTypeString = 'craft\elements\Asset';
+        }
+        if($this->elementType == 'orders'){
+            $elementTypeString = 'craft\commerce\elements\Order';
+        }
+        if($this->elementType == 'products'){
+            $elementTypeString = 'craft\commerce\elements\Product';
+        }
 
         $craftFields = [];
         foreach (Craft::$app->getFields()->getLayoutsByType($elementTypeString) as $fieldLayout) {
@@ -892,8 +907,40 @@ class ElementFilter extends Model
     {
         $fields = $this->getAvaibleFields();
         return array_map(function($single){
+
+            $label = $single->name;
+
+            // for entries, add prefix with field layout name
+            if(
+                $this->elementType == 'entries' ||
+                $this->elementType == 'assets' ||
+                $this->elementType == 'categories' ||
+                $this->elementType == 'products'
+            ){
+                if($this->elementType == 'entries'){
+                    $types = Craft::$app->entries->getAllEntryTypes();
+                }
+                if($this->elementType == 'assets'){
+                    $types = Craft::$app->volumes->getAllVolumes();
+                }
+                if($this->elementType == 'categories'){
+                    $types = Craft::$app->categories->getAllGroups();
+                }
+                if($this->elementType == 'products'){
+                    $types = \craft\commerce\Plugin::getInstance()->getProductTypes()->getAllProductTypes();
+                }
+
+                $layout = $single->layoutElement->layout;
+                $type = array_filter($types, function($singleType) use ($layout){
+                    return $singleType->fieldLayout->id == $layout->id;
+                });
+                $type = reset($type);
+                $label = $type->name . ' - ' . $label;
+
+            }
+
             return [
-                'label' => $single->name,
+                'label' => $label,
                 'value' => $single->layoutElement->uid,
             ];
         }, $fields);
@@ -943,8 +990,6 @@ class ElementFilter extends Model
             $field = $this->getFieldObject();
             if($field != null){
                 $name = $field->name;
-//                var_dump($field->layoutElement->uid);
-//                var_dump($this->fieldUidInLayout);
             }
         }else if($this->filterType == self::FILTER_TYPE_ATTRIBUTE){
             $attribute = $this->getAttributeData();
