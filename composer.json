@@ -2,7 +2,7 @@
     "name": "craftsnippets/craft-quick-filters",
     "description": "Quick filters",
     "type": "craft-plugin",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "keywords": [
         "search",
         "filter",
