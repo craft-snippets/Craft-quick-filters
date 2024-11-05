@@ -242,7 +242,7 @@ class ElementFilter extends Model
                 foreach ($craftField->sources as $source) {
                     if($source != 'singles'){
                         $uid = str_replace('section:', '', $source);
-                        $section = Craft::$app->getSections()->getSectionByUid($uid);
+                        $section = Craft::$app->getEntries()->getSectionByUid($uid);
                         if($section != null){
                             $handles[] = $section['handle'];
                         }
@@ -252,7 +252,7 @@ class ElementFilter extends Model
                 // singles
                 foreach ($craftField->sources as $source) {
                     if($source == 'singles'){
-                        $singlesSections = Craft::$app->getSections()->getSectionsByType('single');
+                        $singlesSections = Craft::$app->getEntries()->getSectionsByType('single');
                         $singleHandles = array_column($singlesSections, 'handle');
                         $handles = array_merge($singleHandles, $handles);
                     }
@@ -315,13 +315,14 @@ class ElementFilter extends Model
 
         // entry
         if(get_class($craftField) == 'craft\fields\Entries'){
+
             if(is_array($craftField->sources)){
                 $handlesChannel = [];
                 $handlesStructure = [];
                 foreach ($craftField->sources as $source) {
                     if($source != 'singles'){
                         $uid = str_replace('section:', '', $source);
-                        $section = Craft::$app->getSections()->getSectionByUid($uid);
+                        $section = Craft::$app->getEntries()->getSectionByUid($uid);
                         if($section != null){
                             if($section->type == 'channel'){
                                 $handlesChannel[] = $section['handle'];
@@ -358,7 +359,7 @@ class ElementFilter extends Model
                 // singles
                 foreach ($craftField->sources as $source) {
                     if($source == 'singles'){
-                        $singlesSections = Craft::$app->getSections()->getSectionsByType('single');
+                        $singlesSections = Craft::$app->getEntries()->getSectionsByType('single');
                         $singleHandles = array_column($singlesSections, 'handle');
                         $singles = \craft\elements\Entry::find()->section($singleHandles)->anyStatus()->all();
                         $elements = array_merge($elements, $singles);
@@ -1391,10 +1392,10 @@ class ElementFilter extends Model
         }
 
         if($this->sourceKey == 'all' || str_contains($this->sourceKey, 'custom')){
-            $entryTypes = Craft::$app->getSections()->getAllEntryTypes();
+            $entryTypes = Craft::$app->getEntries()->getAllEntryTypes();
         }else{
             $uid = str_replace('section:', '', $this->sourceKey);
-            $section = Craft::$app->getSections()->getSectionByUid($uid);
+            $section = Craft::$app->getEntries()->getSectionByUid($uid);
             if(is_null($section)){
                 return [];
             }
@@ -1403,25 +1404,17 @@ class ElementFilter extends Model
 
         $values = array_map(function($single){
             $label = $single->name;
-            // if we display entry types of multiple sections, show chich section do they belong
-            if($this->sourceKey == 'all' || str_contains($this->sourceKey, 'custom')){
-                $label = $label . ' (' . $single->section->name . ')';
-            }
             return [
                 'value' => $single->id,
                 'label' => $label,
                 'level' => 1,
-                'sectionId' => $single->sectionId, // for sorting
-            ];            
+            ];
         }, $entryTypes);
 
-        // sort by section
+        // sort by label
         usort($values, function($a, $b){
-            if ($a['sectionId']  == $b['sectionId'] ) {
-                return 0;
-            }
-            return ($a['sectionId'] < $b['sectionId']) ? -1 : 1;    
-        });        
+            return strcasecmp($a['label'], $b['label']);
+        });
 
         return $values;
     }
