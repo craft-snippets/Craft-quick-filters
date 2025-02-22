@@ -183,7 +183,7 @@ public function getElementGroupData($elementType, $sourceKey)
         // assets
         case 'assets';
 
-            $elementName = Craft::t('commerce', 'Assets');
+            $elementName = Craft::t('app', 'Assets');
             
             $uid = explode(':', $sourceKey);
             $uid = end($uid);
