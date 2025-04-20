@@ -84,6 +84,7 @@ class ElementFilter extends Model
     ];
     const FILEDS_NUMBER = [
             'craft\fields\Number',
+            'craft\fields\Range',
     ];
     const FIELDS_TEXT = [
         'craft\fields\PlainText',
@@ -249,7 +250,7 @@ class ElementFilter extends Model
         $craftFields = $this->getAllLayoutFields();
         $craftFields = array_filter($craftFields, function($single){
             // only number fields
-            if(get_class($single) == 'craft\fields\Number'){
+            if(in_array(get_class($single), self::FILEDS_NUMBER)){
                 return true;
             }
         });
