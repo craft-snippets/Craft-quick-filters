@@ -617,11 +617,17 @@ class ElementFilter extends Model
 
                     // color swatches stores value in content table as json
                     $value  = [
-                        'label' => $single['label'],
-                        'color' => $single['color'],
+
                         'class' => $single['class'],
+                        'color' => $single['color'],
+                        'label' => $single['label'],
+                        'default' => $single['default'] ? true : false,
                     ];
                     $value = json_encode($value);
+
+                    // needs very specific format of json
+                    $value = str_replace(':', ': ', $value);
+                    $value = str_replace(',', ', ', $value);
 
                     return [
                         'value' => $value,
