@@ -72,6 +72,7 @@ class ElementFilter extends Model
             'craft\fields\Dropdown',
             'craft\fields\RadioButtons',
             'craft\fields\MultiSelect',
+            'craft\fields\ButtonGroup',
     ];
     const FIELDS_SWITCH = [
             'craft\fields\Lightswitch',
@@ -90,6 +91,7 @@ class ElementFilter extends Model
 
     const FIELDS_COLOR = [
         'percipiolondon\colourswatches\fields\ColourSwatches',
+        'craft\fields\Color',
     ];
 
     const ATTRIBUTE_TYPE_DATE = 'date';
@@ -609,26 +611,42 @@ class ElementFilter extends Model
 
         // color
         if(in_array(get_class($field), self::FIELDS_COLOR)){
-            $options = array_map(function($single){
 
-                // color swatches stores value in content table as json
-                $value  = [
-                    'label' => $single['label'],
-                    'color' => $single['color'],
-                    'class' => $single['class'],
-                ];
-                $value = json_encode($value);
+            if(get_class($field) == 'percipiolondon\colourswatches\fields\ColourSwatches'){
+                $options = array_map(function($single){
 
-                return [
-                    'value' => $value,
-                    'label' => $single['label'],
-                    'level' => 1,
-                    'color' => $this->getSwatchesOptionCss($single),
-                ];
-            }, $field->options);
+                    // color swatches stores value in content table as json
+                    $value  = [
+                        'label' => $single['label'],
+                        'color' => $single['color'],
+                        'class' => $single['class'],
+                    ];
+                    $value = json_encode($value);
+
+                    return [
+                        'value' => $value,
+                        'label' => $single['label'],
+                        'level' => 1,
+                        'color' => $this->getSwatchesOptionCss($single),
+                    ];
+                }, $field->options);
+            }
+            if(get_class($field) == 'craft\fields\Color'){
+                $options = array_map(function($single){
+                    $color = "linear-gradient(to bottom right, {$single['color']} 0% 100%)";
+                    return [
+                        'value' => $single['color'],
+                        'label' => $single['label'],
+                        'level' => 1,
+                        'color' => $color,
+                    ];
+                }, $field->palette);
+            }
+
             if($this->orderOptionsBy == self::SORT_ALPHABETICALLY){
                 ArrayHelper::multisort($options, 'label');
             }
+            $x = 'u';
         }
 
 
