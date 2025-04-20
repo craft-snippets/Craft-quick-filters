@@ -20,6 +20,7 @@
     data-elements-filters-range
     data-element-filters-handle="{{handle}}"
 >
+    {% if mode == 'double' or mode == '' %}
     <input 
         type="number"
         class="element-filters__range-input"
@@ -36,4 +37,14 @@
         placeholder="{{'To'|t('quick-filters')}}"
         value="{{end}}"
     >
+    {% endif %}
+    {% if mode == 'single' %}
+        <input
+            type="number"
+            class="element-filters__text"
+            data-elements-filters-range-single
+            placeholder="{{'Filter by'|t('quick-filters')}}"
+            value="{{start}}"
+        >
+    {% endif %}
 </div>

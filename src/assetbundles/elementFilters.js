@@ -226,7 +226,7 @@ $('body').on('change', '[data-element-filters-select]', function(){
 });
 
 // unused for new version of slimselect anymore
-$('body').on('change', '[data-elements-filters-range-input], [data-elements-filters-date-input]', function(){
+$('body').on('change', '[data-elements-filters-range-input], [data-elements-filters-range-single], [data-elements-filters-date-input]', function(){
   elementIndexObject.updateElements();
 });
 
@@ -385,6 +385,24 @@ elementIndexObject = null;
     
   });
 
+  // range - single input
+  $('[data-elements-filters-range-single]').each(function(){
+      var min = $(this).val();
+      var max = $(this).val();
+      var handle = $(this).closest('[data-elements-filters-range]').attr('data-element-filters-handle');
+
+      if(min == ''){
+          min = null;
+      }
+      if(max == ''){
+          max = null;
+      }
+
+      if(min != null && max != null){
+          event.params.criteria[handle] = ['and', '>= ' + min, '<= ' + max];
+      }
+  });
+
   // text
   $('[data-elements-filters-text]').each(function(){
     var handle = $(this).attr('data-element-filters-handle');
@@ -411,6 +429,7 @@ elementIndexObject = null;
 
     // range
     $('[data-element-filters-handle="' + handle + '"]').find('[data-elements-filters-range-input]').val('');
+    $('[data-element-filters-handle="' + handle + '"]').find('[data-elements-filters-range-single]').val('');
 
     //text
     $('[data-element-filters-handle="' + handle + '"][data-elements-filters-text]').val('');

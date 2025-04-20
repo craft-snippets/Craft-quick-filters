@@ -91,6 +91,18 @@
         }) }}
     </div>
 
+    {# number input options #}
+    <div data-element-filters-number-type hidden class="field">
+        {{ forms.selectField({
+            label: 'Number widget mode'|t('quick-filters'),
+            id: 'numberWidgetMode',
+            name: 'numberWidgetMode',
+            options: filterObject.getNumberModeOptions(),
+            value: filterObject.numberWidgetMode,
+            errors: filterObject.getErrors('numberWidgetMode'),
+        }) }}
+    </div>
+
     {# params #}
     {{actionInput('quick-filters/element-filters/filter-save')}}
     {{redirectInput('quick-filters/' ~ elementType ~ '/' ~ sourceKey)}}
@@ -141,6 +153,7 @@ function toggleInputs()
     let selectFieldIds = {{ filterObject.getFieldsIdsUsingSelect()|json_encode|raw }};
     let dateFields = {{ filterObject.getFieldIdsUsingDatepicker()|json_encode|raw }};
     let dropdownModeFields = {{ filterObject.getFieldIdsUsingDropdownMode()|json_encode|raw }};
+    let numberFields = {{ filterObject.getFieldIdsNumber()|json_encode|raw }};
 
     let selectAttributes = [];
     let dateAttributes = ['postDate', 'expiryDate', 'dateCreated', 'dateUpdated', 'lastLoginDate', 'dateOrdered', 'datePaid'];
@@ -178,6 +191,14 @@ function toggleInputs()
         $('[data-element-filters-dropdown-type]').hide();
     }
 
+    // number widget mode
+    if(
+        (filterType == 'field' && numberFields.includes(fieldId))
+    ){
+        $('[data-element-filters-number-type]').show();
+    }else{
+        $('[data-element-filters-number-type]').hide();
+    }
 }
 
 $('[data-element-filters-type] select, [data-element-filters-select-field] select, [data-element-filters-select-attribute] select').on('change', function(){

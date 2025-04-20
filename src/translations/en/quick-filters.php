@@ -62,4 +62,8 @@ return [
     'Display all options' => 'Display all options',
     'Ajax mode' => 'Ajax mode',
     'In case your relation field has a lot of selectable elements, it is recommended to use ajax mode to avoid lagging when displaying elements list. Available only for entry fields.' => 'In case your relation field has a lot of selectable elements, it is recommended to use ajax mode to avoid lagging when displaying elements list. Available only for entry fields.',
-];
+    'Number widget mode' => 'Number widget mode',
+    'Display min and max input' => 'Display minimum and maximum value inputs',
+    'Display single number input' => 'Display single number input',
+
+    ];

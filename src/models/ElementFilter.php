@@ -33,6 +33,7 @@ class ElementFilter extends Model
     public $orderOptionsBy;
     public $datePickerType;
     public $dropdownMode = self::DROPDOWN_MODE_DEFAULT;
+    public $numberWidgetMode = self::NUMBER_MODE_DOUBLE;
 
     const JSON_PROPERTIES = [
         'fieldUidInLayout',
@@ -42,6 +43,7 @@ class ElementFilter extends Model
         'datePickerType',
         'dropdownMode',
         'fieldId',
+        'numberWidgetMode',
     ];
 
     const SORT_DEFAULT = 'default';
@@ -103,6 +105,9 @@ class ElementFilter extends Model
     const SELECT_TYPE_OPTIONS = 'options';
     const SELECT_TYPE_SWITCH = 'switch';
     const SELECT_TYPE_COLOR = 'color';
+
+    const NUMBER_MODE_SINGLE = 'single';
+    const NUMBER_MODE_DOUBLE = 'double';
 
     public function init(): void
     {
@@ -200,6 +205,20 @@ class ElementFilter extends Model
         ];
     }
 
+    public function getNumberModeOptions()
+    {
+        return [
+            [
+                'value' => self::NUMBER_MODE_DOUBLE,
+                'label' => Craft::t('quick-filters', 'Display minimum and maximum value inputs'),
+            ],
+            [
+                'value' => self::NUMBER_MODE_SINGLE,
+                'label' => Craft::t('quick-filters', 'Display single number input'),
+            ],
+        ];
+    }
+
     public function getFieldIdsUsingDropdownMode()
     {
         $craftFields = $this->getAllLayoutFields();
@@ -216,6 +235,24 @@ class ElementFilter extends Model
         });
 //        $ids = array_column($craftFields, 'id');
 //        return $ids;
+        $uids = [];
+        foreach ($craftFields as $field){
+            if(isset($field->layoutElement->uid)){
+                $uids[] = $field->layoutElement->uid;
+            }
+        }
+        return $uids;
+    }
+
+    public function getFieldIdsNumber()
+    {
+        $craftFields = $this->getAllLayoutFields();
+        $craftFields = array_filter($craftFields, function($single){
+            // only number fields
+            if(get_class($single) == 'craft\fields\Number'){
+                return true;
+            }
+        });
         $uids = [];
         foreach ($craftFields as $field){
             if(isset($field->layoutElement->uid)){
@@ -865,6 +902,7 @@ class ElementFilter extends Model
             $context = [
                 'handle' => $this->getFilterHandle(),
                 'label' => $this->getName(),
+                'mode' => $this->numberWidgetMode,
             ];            
             $template = self::WIDGET_RANGE_TEMPLATE;
         }
