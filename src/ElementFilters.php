@@ -89,6 +89,7 @@ class ElementFilters extends Plugin
                 'quick-filters/<elementType>/<sourceKey>' => 'quick-filters/element-filters/filter-list',
                 'quick-filters/<elementType>/<sourceKey>/new' => 'quick-filters/element-filters/filter-edit',
                 'quick-filters/<elementType>/<sourceKey>/<filterId:\d+>' => 'quick-filters/element-filters/filter-edit',
+                'quick-filters/get-dropdown-options' => 'quick-filters/element-filters/get-dropdown-options',
             ]);
         });
 

@@ -130,7 +130,10 @@ function initSelect(element){
 
                     search: (search, currentData) => {
                         return new Promise((resolve, reject) => {
-                            fetch(controllerUrl + '&filterId='+filterId+'&q=' + search, {
+                            const url = new URL(controllerUrl);
+                            url.searchParams.set('filterId', filterId);
+                            url.searchParams.set('q', search);
+                            fetch(url, {
                                 method: 'GET',
                                 headers: {
                                     'Content-Type': 'application/json',
