@@ -31,7 +31,7 @@ return [
     'Enabled' => 'Enabled',
     'Disabled' => 'Disabled',
     'Search' => 'Search',
-    'You can create filters from date fields, relation type fields, fields with multiple options, number fields, text fields and lightswitch fields.' => 'You can create filters from date fields, relation type fields, fields with multiple options, number fields, text fields and lightswitch fields.',
+    'You can create filters from date fields, relation type fields, fields with multiple options, number fields, range fields, color fields, text fields and lightswitch fields.' => 'You can create filters from date fields, relation type fields, fields with multiple options, number fields, range fields, color fields, text fields and lightswitch fields.',
     'Select value' => 'Select value',
     'Select date range' => 'Select date range',
     'Clear' => 'Clear',

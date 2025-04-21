@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/) and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 3.1.0 - 2025-04-21
+
+### Added
+- Added button group field support
+- Added color field support
+- Added range field support
+- Added number widget mode setting
+
+### Fixed
+- Fixed bug with wrong ajax mode controller url
+- Fixed bug with color swatches filters using wrong query value
+
 ## 3.0.3 - 2025-02-22
 ### Fixed
 - Fixed bug with error occurring when adding filters to asset lists
