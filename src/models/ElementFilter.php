@@ -512,7 +512,7 @@ class ElementFilter extends Model
             $options = array_map(function($single){
                 return [
                     'value' => $single->id,
-                    'label' => $single->friendlyName,
+                    'label' => $single->fullName,
                     'level' => 1,
                 ];
             }, $unique);                                  
