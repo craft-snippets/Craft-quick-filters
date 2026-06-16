@@ -2,9 +2,32 @@
 // if (typeof elementIndexObject != 'undefined') {
 
 // on page load
-$(document).ready(function(){
-    addFilters(getDataKey($('#sidebar [data-key].sel')));
-})
+
+// $(document).ready(function(){
+//     addFilters(getDataKey($('#sidebar [data-key].sel')));
+// })
+
+$(document).ready(function() {
+    const $sidebar = $('#sidebar');
+
+    if ($sidebar.length) {
+        const observer = new MutationObserver(function(mutationsList, observer) {
+            const $selectedElement = $sidebar.find('[data-key].sel');
+
+            if ($selectedElement.length) {
+                addFilters(getDataKey($selectedElement));
+                observer.disconnect();
+            }
+        });
+
+        observer.observe($sidebar[0], {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['class']
+        });
+    }
+});
 
 // on changing source
 $('#sidebar [data-key]').on('click', function(){
@@ -13,7 +36,6 @@ $('#sidebar [data-key]').on('click', function(){
 });
 
 function getDataKey(element){
-    
     var dataKey = null;
     // assets, with subfolders
     // use volume handle instead datakey, because datakey would be different for each folder
@@ -48,7 +70,7 @@ function getElementType(){
 
   var elementType = null;
 
-  if(url.includes(cpTrigger + '/' + 'entries')){
+  if(url.includes(cpTrigger + '/' + 'content/entries')){
       var elementType = 'entries';
   }
 
